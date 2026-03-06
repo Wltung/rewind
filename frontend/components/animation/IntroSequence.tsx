@@ -110,7 +110,6 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
             maxLength={4}
             className="bg-transparent border-b-2 border-[#4A4A6A]/30 font-mono text-3xl text-[#4A4A6A] text-center w-[150px] outline-none my-5 tracking-[8px] placeholder:text-[#4A4A6A]/20 transition-colors focus:border-[#4A4A6A]/80"
           />
-          <p className="text-xs opacity-50 uppercase tracking-widest mt-4">Gợi ý: Sinh nhật em</p>
         </div>
       )}
 
