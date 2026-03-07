@@ -764,17 +764,17 @@
     0%,
     55% {
         opacity: 0;
-        transform: translateY(5px);
+        transform: translate(-50px, -70px) translateY(5px);
     }
     60%,
     85% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50px, -70px) translateY(0);
     }
     90%,
     100% {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: translate(-50px, -70px) translateY(-5px);
     }
 }
 
