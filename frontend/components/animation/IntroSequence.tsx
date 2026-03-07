@@ -80,9 +80,6 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
     }
   }, [currentFrame, step, onComplete]);
 
-  // Tính toán % cho thanh tiến trình
-  const progressPercent = Math.min(((currentFrame + 1) / (MESSAGES.length + 1)) * 100, 100);
-
   return (
     <div 
       // Xóa bg-[#E6E6FA] ở đây để lớp khung không bị giới hạn bởi viền an toàn nữa
@@ -156,13 +153,6 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
         </div>
       )}
 
-      {/* Thanh Progress chạy ngang ở dưới cùng */}
-      {(step === "whisper" || step === "fading-out") && (
-        <div 
-          className="fixed bottom-0 left-0 h-1 bg-[#4A4A6A]/20 transition-all duration-500 ease-linear"
-          style={{ width: `${progressPercent}%` }}
-        ></div>
-      )}
     </div>
   );
 }
