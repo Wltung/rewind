@@ -96,6 +96,15 @@ export default function Home() {
         <div className="fixed inset-0 z-[100] bg-[#c2a77d] flex-col items-center justify-center text-[#2c3e50] hidden max-md:portrait:flex shadow-2xl">
           <span className="material-symbols-outlined text-[80px] mb-6 animate-[spin_3s_linear_infinite] opacity-80">screen_rotation</span>
           <p className="text-center px-8 font-['Caveat'] text-4xl font-bold leading-relaxed">Xoay ngang máy nhé!</p>
+
+          {/* Lời nhắc chuyên trị Zalo/Messenger */}
+          <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl max-w-[80%] border border-white/30 text-center animate-pulse">
+            <p className="font-['Lora'] text-sm italic font-medium">
+              💡 Bị kẹt không xoay được?<br/>
+              Nhấn vào dấu <strong className="text-xl">⋮</strong> hoặc <strong className="text-xl">...</strong> ở góc phải màn hình và chọn <br/>
+              <span className="bg-[#8a3324] text-white px-2 py-1 rounded mt-2 inline-block not-italic shadow-md">Mở bằng trình duyệt/Safari (Open in Safari/Chrome)</span>
+            </p>
+          </div>
         </div>
       )}
 
