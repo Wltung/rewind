@@ -74,7 +74,7 @@ export default function EnvelopeTransition({ onComplete }: Props) {
           <div className="absolute inset-2 md:inset-4 border border-dashed border-[#8b5a33] rounded-r-xl opacity-40"></div>
           <div className="absolute bottom-20 left-10 md:left-16 w-60 min-h-[160px] bg-[#fdf08c] shadow-[4px_5px_15px_rgba(0,0,0,0.4)] -rotate-3 p-5 flex flex-col justify-center border border-[#e8df7b] z-20 backface-hidden">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-8 bg-white/40 backdrop-blur-[2px] shadow-sm rotate-[4deg] border border-white/20" style={{ clipPath: "polygon(0 10%, 100% 0, 95% 100%, 5% 90%)" }}></div>
-            <p className="text-[#2c3e50] text-xl md:text-2xl text-center font-['Caveat'] font-bold leading-relaxed">Chạm nhẹ vào đây để mở món quà nhỏ dành riêng cho em</p>
+            <p className="text-[#2c3e50] text-xl md:text-2xl text-center font-['Dancing_Script'] font-bold leading-relaxed">Chạm nhẹ vào đây để mở món quà nhỏ dành riêng cho em</p>
             <div className="absolute bottom-2 right-2 text-[#d14f4f] opacity-80"><span className="material-symbols-outlined text-2xl">favorite</span></div>
           </div>
           <div className="absolute top-1/2 -right-8 -translate-y-1/2 w-12 h-16 bg-gradient-to-r from-[#3a2210] to-[#2a1a10] shadow-lg rounded-r-md -z-10 border-y border-black backface-hidden"></div>

@@ -38,18 +38,24 @@ export const BloomingCalendarPage = ({ onNext }: { onNext: () => void }) => (
         <g className="flower-bud" transform="translate(60, 290)"><circle cx="0" cy="0" fill="#ffee58" r="2"></circle><circle cx="0" cy="-3" fill="#ffab91" r="3"></circle><circle cx="3" cy="0" fill="#ffab91" r="3"></circle><circle cx="0" cy="3" fill="#ffab91" r="3"></circle><circle cx="-3" cy="0" fill="#ffab91" r="3"></circle></g>
       </svg>
       
-      {/* Hiệu ứng Bướm bay */}
-      <div className="butterfly-container">
-        <svg height="30" viewBox="0 0 30 30" width="30" xmlns="http://www.w3.org/2000/svg">
-          <g className="butterfly-wing" transform="translate(15, 15)"><path d="M 0 0 C -10 -15, -20 -5, -15 5 C -10 15, -5 10, 0 0" fill="#fff" opacity="0.8" stroke="#f48fb1" strokeWidth="1"></path><path d="M -2 -2 C -8 -10, -12 -2, -10 3" fill="none" opacity="0.6" stroke="#f48fb1" strokeWidth="0.5"></path></g>
-          <g className="butterfly-wing-right" transform="translate(15, 15)"><path d="M 0 0 C 10 -15, 20 -5, 15 5 C 10 15, 5 10, 0 0" fill="#fff" opacity="0.8" stroke="#f48fb1" strokeWidth="1"></path><path d="M 2 -2 C 8 -10, 12 -2, 10 3" fill="none" opacity="0.6" stroke="#f48fb1" strokeWidth="0.5"></path></g>
-          <ellipse cx="15" cy="15" fill="#4a4a4a" rx="1.5" ry="5"></ellipse><circle cx="15" cy="10" fill="#4a4a4a" r="1.5"></circle>
+      {/* Hiệu ứng Bướm bay mini (Mới) */}
+      <div className="butterfly-container" style={{ top: "62%", left: "62%", animation: "gentle-hover 4s infinite ease-in-out" }}>
+        <svg className="opacity-80 drop-shadow-sm scale-150" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <g style={{ transformOrigin: "10px 10px", animation: "mini-flap 0.2s infinite alternate linear" }}>
+            <path d="M 10 10 Q 5 2, 2 5 Q 0 8, 10 10" fill="#D1C4E9" opacity="0.7" stroke="#9575CD" strokeWidth="0.5"></path>
+            <path d="M 10 10 Q 6 15, 4 13 Q 2 11, 10 10" fill="#D1C4E9" opacity="0.5" stroke="#9575CD" strokeWidth="0.5"></path>
+          </g>
+          <g style={{ transformOrigin: "10px 10px", animation: "mini-flap-right 0.2s infinite alternate linear" }}>
+            <path d="M 10 10 Q 15 2, 18 5 Q 20 8, 10 10" fill="#D1C4E9" opacity="0.7" stroke="#9575CD" strokeWidth="0.5"></path>
+            <path d="M 10 10 Q 14 15, 16 13 Q 18 11, 10 10" fill="#D1C4E9" opacity="0.5" stroke="#9575CD" strokeWidth="0.5"></path>
+          </g>
+          <line stroke="#5E35B1" strokeLinecap="round" strokeWidth="0.8" x1="10" x2="10" y1="8" y2="12"></line>
         </svg>
       </div>
     </div>
 
     <div className="absolute bottom-8 right-10 z-40 flex items-center gap-2 text-stone-500 opacity-70 hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto" onClick={(e) => { e.stopPropagation(); onNext(); }}>
-      <span className="font-['Caveat'] text-2xl font-bold">Còn nữa nè...</span>
+      <span className="font-['Dancing_Script'] text-2xl font-bold">Còn nữa nè...</span>
       <span className="material-symbols-outlined animate-pulse text-xl">arrow_forward</span>
     </div>
   </PageSpread>

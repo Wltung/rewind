@@ -1,14 +1,28 @@
+/* 1. Import Fonts */
+
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&subset=vietnamese&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&subset=vietnamese&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Dancing+Script:wght@400;600;700&family=Inconsolata:wght@400;700&family=Patrick+Hand&family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Dancing+Script:wght@400;600;700&family=Inconsolata:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Patrick+Hand&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&subset=vietnamese&display=swap');
 
-/* Font rounded cho Vui Tươi */
+/* 2. Tailwind Core */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 3. Phân bổ CSS theo cấu trúc Module */
+
+
+/* @import '../styles/base/base.css';
+@import '../styles/components/book.css';
+@import '../styles/components/envelope.css';
+@import '../styles/effects/overlays.css';
+@import '../styles/effects/particles.css';
+@import '../styles/animations/keyframes.css'; */
+
 @theme {
     --color-ink: #2c3e50;
     --color-desk: #c2a77d;
@@ -16,7 +30,7 @@
     --color-leather-base: #5c3a21;
     --color-leather-dark: #3a2210;
     --font-typewriter: 'Courier Prime', monospace;
-    --font-hand: 'Patrick Hand', cursive;
+    --font-hand: 'Dancing Script', cursive;
     --font-serif: 'Playfair Display', serif;
 }
 
@@ -363,59 +377,40 @@
 }
 
 
-/* Bướm bay */
+/* Bướm bay mini (Cập nhật theo code mẫu) */
 
 .butterfly-container {
     position: absolute;
-    top: 250px;
-    left: 140px;
-    animation: flutter-down 8s forwards ease-in-out;
     z-index: 40;
+    pointer-events: none;
+    /* Đảm bảo không cản trở việc click các nút bên dưới */
 }
 
-.butterfly-wing {
-    transform-origin: center;
-    animation: flap 0.15s infinite alternate linear;
-}
-
-.butterfly-wing-right {
-    transform-origin: center;
-    animation: flap-right 0.15s infinite alternate linear;
-}
-
-@keyframes flutter-down {
+@keyframes mini-flap {
     0% {
-        transform: translate(200px, -200px) rotate(-30deg) scale(0.6);
-    }
-    30% {
-        transform: translate(150px, -100px) rotate(-10deg) scale(0.7);
-    }
-    70% {
-        transform: translate(50px, -50px) rotate(-40deg) scale(0.8);
-    }
-    95% {
-        transform: translate(5px, -10px) rotate(-20deg) scale(0.95);
+        transform: scaleX(1) rotate(0deg);
     }
     100% {
-        transform: translate(0px, 0px) rotate(-15deg) scale(1);
+        transform: scaleX(0.3) rotate(-5deg);
     }
 }
 
-@keyframes flap {
+@keyframes mini-flap-right {
     0% {
-        transform: scaleX(1) skewY(-10deg);
+        transform: scaleX(1) rotate(0deg);
     }
     100% {
-        transform: scaleX(0.2) skewY(-5deg);
+        transform: scaleX(0.3) rotate(5deg);
     }
 }
 
-@keyframes flap-right {
-    0% {
-        transform: scaleX(1) skewY(10deg);
-    }
+@keyframes gentle-hover {
+    0%,
     100% {
-        transform: scaleX(0.2) skewY(5deg);
+        transform: translate(0, 0) rotate(-15deg);
+    }
+    50% {
+        transform: translate(2px, -3px) rotate(-10deg);
     }
 }
 
@@ -581,7 +576,7 @@
 /* ======================================================== */
 
 .friendly-text {
-    font-family: 'Patrick Hand', cursive;
+    font-family: 'Dancing_Script', cursive;
     /* hoặc Mali nếu bạn đã import */
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
     opacity: 0;
@@ -698,7 +693,7 @@
 /* ======================================================== */
 
 .bold-charcoal-text {
-    font-family: 'Patrick Hand', cursive;
+    font-family: 'Dancing_Script', cursive;
     color: #333333;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     opacity: 0;
@@ -800,7 +795,7 @@
 /* ======================================================== */
 
 .celebration-text {
-    font-family: 'Patrick Hand', cursive;
+    font-family: 'Caveat', 'Patrick Hand', cursive;
     color: #831843;
     /* Màu đỏ đô chuẩn mẫu vẽ */
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);

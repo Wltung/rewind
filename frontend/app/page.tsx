@@ -95,7 +95,7 @@ export default function Home() {
       {stage >= 1 && (
         <div className="fixed inset-0 z-[100] bg-[#c2a77d] flex-col items-center justify-center text-[#2c3e50] hidden max-md:portrait:flex shadow-2xl">
           <span className="material-symbols-outlined text-[80px] mb-6 animate-[spin_3s_linear_infinite] opacity-80">screen_rotation</span>
-          <p className="text-center px-8 font-['Caveat'] text-4xl font-bold leading-relaxed">Vui lòng xoay ngang thiết bị<br/>để nhận quà nhé!</p>
+          <p className="text-center px-8 font-['Caveat'] text-4xl font-bold leading-relaxed">Xoay ngang máy nhé!</p>
         </div>
       )}
 
@@ -156,7 +156,8 @@ export default function Home() {
                                   zIndex: zIndex,
                                   transition: isPageFlipped 
                                       ? "transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0s 0.6s" 
-                                      : "transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0s 0s"
+                                      : "transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), z-index 0s 0s",
+                                  willChange: "transform, z-index"
                                }}
                             >
                                <div className="absolute inset-0 backface-hidden" style={{ transform: "translateZ(2px)" }}>

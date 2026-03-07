@@ -8,7 +8,7 @@ export function CoverFront({ isFlipped }: { isFlipped: boolean }) {
       <div className="absolute inset-2 md:inset-4 border border-dashed border-[#8b5a33] rounded-r-xl opacity-40"></div>
       <div className={`absolute bottom-20 left-10 md:left-16 w-60 min-h-[160px] bg-[#fdf08c] shadow-[4px_5px_15px_rgba(0,0,0,0.4)] -rotate-3 p-5 flex flex-col justify-center border border-[#e8df7b] z-20 backface-hidden ${!isFlipped ? 'animate-pulse' : ''}`}>
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-8 bg-white/40 backdrop-blur-[2px] shadow-sm rotate-[4deg] border border-white/20" style={{ clipPath: "polygon(0 10%, 100% 0, 95% 100%, 5% 90%)" }}></div>
-        <p className="text-[#2c3e50] text-xl md:text-2xl text-center font-['Caveat'] font-bold leading-relaxed">Chạm nhẹ vào đây để mở món quà nhỏ dành riêng cho em</p>
+        <p className="text-[#2c3e50] text-xl md:text-2xl text-center font-['Dancing_Script'] font-bold leading-relaxed">Chạm nhẹ vào đây để mở món quà nhỏ dành riêng cho em</p>
         <div className="absolute bottom-2 right-2 text-[#d14f4f] opacity-80"><span className="material-symbols-outlined text-2xl">favorite</span></div>
       </div>
       <div className="absolute top-1/2 -right-8 -translate-y-1/2 w-12 h-16 bg-gradient-to-r from-[#3a2210] to-[#2a1a10] shadow-lg rounded-r-md -z-10 border-y border-black backface-hidden"></div>
@@ -35,7 +35,7 @@ export function CoverBack() {
         </div>
       </div>
       <div className="relative mt-8 z-20 text-center px-6 rotate-[-2deg]">
-        <p className="font-['Caveat'] text-[1.6rem] font-bold text-[#8a3324] leading-relaxed bg-[#fdfbf7]/70 backdrop-blur-sm rounded-md px-4 py-1 shadow-[0_0_15px_rgba(255,255,255,0.7)] border border-white/50">Một chút năng lượng nhỏ cho ngày 8/3</p>
+        <p className="font-['Dancing_Script'] text-[1.6rem] font-bold text-[#8a3324] leading-relaxed bg-[#fdfbf7]/70 backdrop-blur-sm rounded-md px-4 py-1 shadow-[0_0_15px_rgba(255,255,255,0.7)] border border-white/50">Một chút năng lượng nhỏ cho ngày 8/3</p>
       </div>
       <div className="absolute top-1/2 left-8 -translate-y-1/2 rotate-[15deg] z-10 opacity-90 drop-shadow-md scale-90">
         <div className="w-1 h-32 bg-[#6b7252] rounded-full"></div><div className="absolute top-10 -left-3 w-4 h-8 rounded-full bg-[#5a6242] rotate-[-40deg]"></div><div className="absolute top-16 left-1 w-3 h-6 rounded-full bg-[#5a6242] rotate-[30deg]"></div><div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-[#d4b5a3] mix-blend-multiply opacity-85 rotate-12"></div>

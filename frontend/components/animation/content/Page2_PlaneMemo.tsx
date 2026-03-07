@@ -22,7 +22,7 @@ export const PlaneFront = ({ isFlying, onNext }: { isFlying: boolean, onNext: ()
       )}
     </div>
     <div className="absolute bottom-8 right-10 z-40 flex items-center gap-2 text-stone-500 opacity-70 hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto" onClick={(e) => { e.stopPropagation(); onNext(); }}>
-      <span className="font-['Caveat'] text-2xl font-bold">Lật tiếp nha...</span>
+      <span className="font-['Dancing_Script'] text-2xl font-bold">Lật tiếp nha...</span>
       <span className="material-symbols-outlined animate-pulse text-xl">arrow_forward</span>
     </div>
   </PageSpread>

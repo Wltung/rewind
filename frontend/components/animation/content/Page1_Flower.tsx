@@ -18,7 +18,7 @@ export const FlowerFront = ({ onNext }: { onNext: () => void }) => (
       </svg>
     </div>
     <div className="absolute bottom-8 right-10 z-40 flex items-center gap-2 text-stone-500 opacity-70 hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto" onClick={(e) => { e.stopPropagation(); onNext(); }}>
-      <span className="font-['Caveat'] text-2xl font-bold">Chạm vào đây để xem tiếp nhé...</span>
+      <span className="font-['Dancing_Script'] text-2xl font-bold">Chạm vào đây để xem tiếp nhé...</span>
       <span className="material-symbols-outlined animate-pulse text-xl">arrow_forward</span>
     </div>
   </PageSpread>

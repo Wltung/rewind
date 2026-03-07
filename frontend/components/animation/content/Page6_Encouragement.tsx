@@ -65,7 +65,7 @@ export const MountainFront = ({ isShining, onNext }: { isShining: boolean, onNex
                 <circle cx="0" cy="0" fill="#f59e0b" r="6" stroke="#4b5563" strokeWidth="1.5"></circle>
                 <g className="speech-bubble" transform="translate(-40, -45)">
                   <path d="M 10 0 H 90 Q 100 0 100 10 V 25 Q 100 35 90 35 H 55 L 45 45 L 40 35 H 10 Q 0 35 0 25 V 10 Q 0 0 10 0 Z" fill="white" stroke="#4b5563" strokeWidth="1"></path>
-                  <text fill="#374151" className="font-['Caveat']" fontSize="16" fontWeight="bold" textAnchor="middle" x="50" y="22">Sắp tới đích rồi!</text>
+                  <text fill="#374151" className="font-['Dancing_Script']" fontSize="16" fontWeight="bold" textAnchor="middle" x="50" y="22">Sắp tới đích rồi!</text>
                 </g>
               </g>
             )}
@@ -88,7 +88,7 @@ export const MountainFront = ({ isShining, onNext }: { isShining: boolean, onNex
               <span>{formatTime(timeLeft.seconds)}</span>
             </div>
           </div>
-          <p className="font-['Caveat'] text-3xl text-gray-600 mt-6 transform -rotate-2 font-bold animate-pulse" style={{ animationDuration: '3s' }}>Cố lên nhé.</p>
+          <p className="font-['Caveat','Patrick_Hand',cursive] text-3xl text-gray-600 mt-6 transform -rotate-2 font-bold animate-pulse" style={{ animationDuration: '3s' }}>Cố lên nhé.</p>
         </div>
       </div>
       
