@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 const MESSAGES = [
@@ -110,18 +111,39 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
         </div>
       )}
 
-      {/* STEP 2: Nút Play (Drift) */}
+      {/* STEP 2: Lựa chọn Hành động (Drift) */}
       {step === "drift" && (
         <div className="text-center animate-in fade-in zoom-in duration-700">
-          <button
-            onClick={handlePlay}
-            className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center mx-auto mb-6 hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#4A4A6A" className="ml-1">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </button>
-          <p className="font-['Lora'] italic text-lg font-medium tracking-wide opacity-80">Đeo tai nghe vào nhé</p>
+          
+          <div className="flex justify-center items-center gap-8 mb-6">
+            {/* Nút 1: Mở thư cũ (Play Nhạc) */}
+            <div className="flex flex-col items-center gap-3">
+              <button
+                onClick={handlePlay}
+                className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#4A4A6A" className="ml-1">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+              {/* <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Mở thư</p> */}
+            </div>
+
+            {/* NÚT 2: ĐÃ ĐƯỢC KHÓA LẠI (TẠM ẨN) */}
+            {/* KHÔNG XÓA - CHỈ ẨN ĐI BẰNG CẶP DẤU {/* VÀ */} 
+            {/* <div className="flex flex-col items-center gap-3">
+              <Link href="/chapter-18">
+                <button className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+                  <span className="material-symbols-outlined text-[32px] text-[#4A4A6A]">filter_vintage</span>
+                </button>
+              </Link>
+              <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Hoa nở</p>
+            </div> 
+            */}
+
+          </div>
+
+          <p className="font-['Lora'] italic text-lg font-medium tracking-wide opacity-80 mt-4">Đeo tai nghe vào nhé</p>
         </div>
       )}
 
