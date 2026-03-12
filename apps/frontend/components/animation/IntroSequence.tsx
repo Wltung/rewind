@@ -27,16 +27,10 @@ interface IntroSequenceProps {
 }
 
 export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequenceProps) {
-  const [step, setStep] = useState<"gate" | "drift" | "whisper" | "fading-out">("gate");
+  // Đổi state mặc định từ "gate" thẳng sang "drift" để bỏ qua cổng mật khẩu
+  const [step, setStep] = useState<"drift" | "whisper" | "fading-out">("drift");
   const [currentFrame, setCurrentFrame] = useState(0);
   const [messageOpacity, setMessageOpacity] = useState(0);
-
-  // Xử lý khi nhập đúng mật khẩu
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "3001") {
-      setTimeout(() => setStep("drift"), 500);
-    }
-  };
 
   // Xử lý khi bấm nút Play
   const handlePlay = () => {
@@ -97,20 +91,6 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
         <div className="absolute bottom-[10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#B0E0E6] animate-blob-delayed"></div>
       </div>
 
-      {/* STEP 1: Cổng Mật Khẩu */}
-      {step === "gate" && (
-        <div className="glass-panel p-10 rounded-[30px] text-center transition-all duration-800 animate-in fade-in zoom-in-95">
-          <p className="font-['Lora'] italic text-lg opacity-80 font-medium tracking-wide mb-2">Một ngày đặc biệt của tháng 1...</p>
-          <input
-            type="text"
-            onChange={handlePasswordChange}
-            placeholder="DDMM"
-            maxLength={4}
-            className="bg-transparent border-b-2 border-[#4A4A6A]/30 font-mono text-3xl text-[#4A4A6A] text-center w-[150px] outline-none my-5 tracking-[8px] placeholder:text-[#4A4A6A]/20 transition-colors focus:border-[#4A4A6A]/80"
-          />
-        </div>
-      )}
-
       {/* STEP 2: Lựa chọn Hành động (Drift) */}
       {step === "drift" && (
         <div className="text-center animate-in fade-in zoom-in duration-700">
@@ -126,11 +106,10 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </button>
-              {/* <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Mở thư</p> */}
+              <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Mở thư</p>
             </div>
 
-            {/* NÚT 2: ĐÃ ĐƯỢC KHÓA LẠI (TẠM ẨN) */}
-            {/* KHÔNG XÓA - CHỈ ẨN ĐI BẰNG CẶP DẤU {/* VÀ */} 
+            {/* NÚT 2: ĐÃ ĐƯỢC KHÓA LẠI - Bọc toàn bộ div trong cặp ngoặc nhọn */}
             {/* <div className="flex flex-col items-center gap-3">
               <Link href="/chapter-18">
                 <button className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]">
