@@ -1,45 +1,39 @@
 # ========================
-# Node / PNPM
+# Go build
 # ========================
-node_modules
-.pnpm-store
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
 # ========================
-# Turbo
+# Go test
 # ========================
-.turbo
+*.test
+*.out
+coverage.out
 
 # ========================
-# Logs
+# Go workspace
 # ========================
-*.log
-pnpm-debug.log*
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+go.work
+go.work.sum
 
 # ========================
 # Env
 # ========================
 .env
 .env.local
-.env.*.local
 
 # ========================
-# OS
+# Logs
+# ========================
+*.log
+
+# ========================
+# Mac / Windows
 # ========================
 .DS_Store
 Thumbs.db
-
-# ========================
-# IDE
-# ========================
-.vscode
-.idea
-
-# ========================
-# Build outputs
-# ========================
-dist
-build
-out
