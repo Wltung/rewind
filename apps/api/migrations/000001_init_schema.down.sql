@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS memories;
+DROP TABLE IF EXISTS site_configs;

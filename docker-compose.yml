@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rewind_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: abc@123 # Nhớ đổi pass này giống trong file .env của BE
+      MYSQL_DATABASE: rewind_db                # Tự động tạo DB khi chạy lần đầu
+    ports:
+      - "3307:3306"
+    volumes:
+      # 1. Đổi dòng này thành tên một volume ảo:
+      - rewind_mysql_data:/var/lib/mysql
+      # Dòng init sql vẫn giữ nguyên vì nó chỉ đọc chứ không ghi
+      - ./docker/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+# 2. Khai báo volume ảo ở cuối file
+volumes:
+  rewind_mysql_data:
