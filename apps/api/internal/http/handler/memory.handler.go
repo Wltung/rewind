@@ -2,19 +2,24 @@ package handler
 
 import (
 	"net/http"
-	"rewind/api/internal/db"    // Nhớ thay bằng tên module của bạn
-	"rewind/api/internal/model" // Nhớ thay bằng tên module của bạn
+	"rewind/api/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-// GetAllMemories trả về danh sách toàn bộ ảnh kỷ yếu, sắp xếp mới nhất lên đầu
-func GetAllMemories(c *gin.Context) {
-	var memories []model.Memory
+// Đóng gói service vào struct của handler
+type MemoryHandler struct {
+	service service.MemoryService
+}
 
-	// Lấy tất cả, sắp xếp theo ngày chụp giảm dần
-	if err := db.DB.Order("memory_date desc").Find(&memories).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể lấy dữ liệu kỷ niệm"})
+func NewMemoryHandler(service service.MemoryService) *MemoryHandler {
+	return &MemoryHandler{service}
+}
+
+func (h *MemoryHandler) GetAllMemories(c *gin.Context) {
+	memories, err := h.service.GetAll()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể lấy dữ liệu ảnh kỷ yếu"})
 		return
 	}
 
@@ -24,12 +29,9 @@ func GetAllMemories(c *gin.Context) {
 	})
 }
 
-// GetRandomMemory trả về đúng 1 bức ảnh ngẫu nhiên cho tính năng Gacha Polaroid
-func GetRandomMemory(c *gin.Context) {
-	var memory model.Memory
-
-	// Query random chuẩn của MySQL: ORDER BY RAND() LIMIT 1
-	if err := db.DB.Order("RAND()").First(&memory).Error; err != nil {
+func (h *MemoryHandler) GetRandomMemory(c *gin.Context) {
+	memory, err := h.service.GetRandom()
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Chưa có bức ảnh nào trong kho"})
 		return
 	}

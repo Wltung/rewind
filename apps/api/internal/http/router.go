@@ -1,13 +1,21 @@
 package http
 
 import (
-	"rewind/api/internal/http/handler" // Đổi tên module
+	"rewind/api/internal/db"
+	"rewind/api/internal/http/handler"
 	"rewind/api/internal/http/middleware"
+	"rewind/api/internal/repository"
+	"rewind/api/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(r *gin.Engine) {
+	// Khởi tạo các lớp cho Memories (Lưu ý lấy db.DB đã connect)
+	memoryRepo := repository.NewMemoryRepo(db.DB)
+	memoryService := service.NewMemoryService(memoryRepo)
+	memoryHandler := handler.NewMemoryHandler(memoryService)
+
 	api := r.Group("/api")
 
 	// Route kiểm tra sức khỏe hệ thống
@@ -27,8 +35,9 @@ func SetupRouter(r *gin.Engine) {
 	memories := api.Group("/memories")
 	memories.Use(middleware.RequireAuth())
 	{
-		memories.GET("/", handler.GetAllMemories)
-		memories.GET("/random", handler.GetRandomMemory)
+		// Dùng method của instance h thay vì gọi function trực tiếp
+		memories.GET("/", memoryHandler.GetAllMemories)
+		memories.GET("/random", memoryHandler.GetRandomMemory)
 	}
 
 	// Các API Auth sẽ được thêm vào sau

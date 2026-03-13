@@ -2,29 +2,29 @@ package middleware
 
 import (
 	"net/http"
-
-	"rewind/api/internal/auth" // Đổi tên module của bạn
+	"rewind/api/internal/auth" // Đảm bảo đúng path module của bạn
 
 	"github.com/gin-gonic/gin"
 )
 
-// RequireAuth là trạm gác chặn các request không có vé (Cookie)
 func RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 1. Móc Cookie ra từ request
 		cookie, err := c.Cookie("rewind_auth")
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Không phận sự miễn vào!"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Vui lòng đăng nhập!"})
 			return
 		}
 
-		// 2. Nhờ hàm ValidateToken (bạn đã viết ở jwt.go) kiểm tra vé
-		if err := auth.ValidateToken(cookie); err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Vé đã hết hạn hoặc không hợp lệ"})
+		// Sửa lại đoạn này: Giả sử ValidateToken của bạn trả về Claims hoặc UserID
+		claims, err := auth.ValidateToken(cookie)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Phiên đăng nhập hết hạn"})
 			return
 		}
 
-		// 3. Vé hợp lệ, mở cổng cho đi tiếp vào Handler
+		// Lưu userID vào context để các hàm sau (như tạo hóa đơn) có thể lấy ra dùng
+		c.Set("userID", claims.UserID)
+
 		c.Next()
 	}
 }
