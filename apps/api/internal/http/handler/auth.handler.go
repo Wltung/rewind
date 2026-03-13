@@ -51,28 +51,18 @@ func Login(c *gin.Context) {
 
 // CheckAuth dùng để FE gọi mỗi khi load trang xem Cookie còn hạn không
 func CheckAuth(c *gin.Context) {
-	// 1. Lấy cookie từ request
 	cookie, err := c.Cookie("rewind_auth")
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"authenticated": false, "error": "Chưa đăng nhập"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Chưa xác thực"})
 		return
 	}
 
-	// 2. Cập nhật: Nhận 2 giá trị (claims và err) từ ValidateToken
-	claims, err := auth.ValidateToken(cookie)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"authenticated": false, "error": "Phiên đăng nhập hết hạn"})
+	if err := auth.ValidateToken(cookie); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Phiên đăng nhập hết hạn"})
 		return
 	}
 
-	// 3. Trả về thành công kèm thông tin user để FE sử dụng (hiển thị tên, avatar...)
-	c.JSON(http.StatusOK, gin.H{
-		"authenticated": true,
-		"user": gin.H{
-			"id":       claims.UserID,
-			"username": claims.Username,
-		},
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Xác thực thành công"})
 }
 
 // Logout dùng để xóa Cookie
