@@ -26,6 +26,7 @@ export const songService = {
     const formData = new FormData();
     formData.append("title", payload.title);
     formData.append("artist", payload.artist);
+    formData.append("quote", payload.quote || "");
     formData.append("duration", payload.duration);
     formData.append("lyrics", payload.lyrics);
     formData.append("audio_file", payload.audioFile); // Tên field phải khớp với BE c.FormFile("audio_file")

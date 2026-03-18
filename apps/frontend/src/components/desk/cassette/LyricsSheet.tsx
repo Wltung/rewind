@@ -114,9 +114,16 @@ export function LyricsSheet({ currentTrack, currentTime, audioRef, isPlaying, on
       </div>
 
       {/* Sticky Note Hồng (Đẩy z-index lên 30 để luôn nằm trên cùng) */}
-      <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#FFC1CC] shadow-[4px_8px_20px_rgba(0,0,0,0.3)] transform rotate-[8deg] flex items-center justify-center p-2 text-center z-30">
-        <p className="font-hand text-ink text-[15px] leading-tight rotate-[-4deg]">This track is <br/> fire! 🔥</p>
-      </div>
+      {currentTrack.quote && (
+        <div className="absolute -top-4 -right-4 w-28 h-28 bg-[#FFC1CC] shadow-[4px_8px_20px_rgba(0,0,0,0.3)] transform rotate-[8deg] flex items-center justify-center p-3 text-center z-30 transition-all hover:rotate-0 hover:scale-110">
+          {/* Ghim nhỏ trang trí */}
+          <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-red-500 shadow-sm border border-red-700/50" />
+          
+          <p className="font-hand text-ink text-[16px] leading-snug rotate-[-4deg] break-words line-clamp-4">
+            {currentTrack.quote}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

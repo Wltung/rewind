@@ -24,6 +24,8 @@ func SetupRouter(r *gin.Engine) {
 	songService := service.NewSongService(songRepo)
 	songHandler := handler.NewSongHandler(songService)
 
+	configHandler := handler.NewConfigHandler(db.DB)
+
 	api := r.Group("/api")
 
 	// Route kiểm tra sức khỏe hệ thống
@@ -57,5 +59,10 @@ func SetupRouter(r *gin.Engine) {
 		songs.GET("/nct-lyrics", songHandler.FetchNCTLyrics)
 	}
 
-	// Các API Auth sẽ được thêm vào sau
+	configs := api.Group("/configs")
+	configs.Use(middleware.RequireAuth())
+	{
+		configs.GET("/:key", configHandler.GetConfig)
+		configs.POST("/:key", configHandler.SetConfig)
+	}
 }

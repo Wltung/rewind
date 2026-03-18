@@ -56,6 +56,7 @@ func (h *SongHandler) UploadSong(c *gin.Context) {
 	// 1. Lấy Text Data từ FormData
 	title := c.PostForm("title")
 	artist := c.PostForm("artist")
+	quote := c.PostForm("quote")
 	duration := c.PostForm("duration")
 	lyricsJSON := c.PostForm("lyrics")
 
@@ -106,6 +107,7 @@ func (h *SongHandler) UploadSong(c *gin.Context) {
 	song := model.Song{
 		Title:         title,
 		Artist:        artist,
+		Quote:         quote,
 		DurationLabel: duration,
 		AudioURL:      audioURL,
 		Lyrics:        lyrics,

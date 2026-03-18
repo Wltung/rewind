@@ -1,4 +1,5 @@
 import { useSong } from "@/hooks/useSong";
+import { configService } from "@/services/config.service";
 import { songService } from "@/services/song.service";
 import React, { useRef, useState, useEffect } from "react";
 
@@ -69,17 +70,27 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
   if (!isOpen) return null;
 
   // Xử lý khi bấm nút Pin to Desk
-  const handlePinToDesk = () => {
+  const handlePinToDesk = async () => {
     if (!songTitle.trim()) {
       showToast("Vui lòng điền tên bài hát muốn yêu cầu nhé!", "error");
       return;
     }
     
-    showToast("Đã ghim yêu cầu lên mặt bàn! 📌", "success");
-    // Delay một chút để user kịp nhìn thấy thông báo rồi mới đóng Modal
-    setTimeout(() => {
-      onSubmitRequest(songTitle, artist);
-    }, 1200);
+    try {
+      // Gọi qua Service cực gọn
+      await configService.setDeskNote({
+        title: songTitle.trim(),
+        artist: artist.trim(),
+        timestamp: Date.now() // Cắm mốc thời gian lúc tạo
+      });
+
+      showToast("Đã ghim yêu cầu lên mặt bàn! 📌", "success");
+      setTimeout(() => {
+        onSubmitRequest(songTitle, artist);
+      }, 1200);
+    } catch (error) {
+      showToast("Lỗi khi ghim, hãy thử lại!", "error");
+    }
   };
 
   // Xử lý Upload thực tế
@@ -92,28 +103,32 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
     // XỬ LÝ PARSE TÊN BÀI VÀ CA SĨ
     let finalTitle = upTitle.trim();
     let finalArtist = upArtist;
+    let finalQuote = "";
 
     if (upTitle.includes(" - ")) {
       const parts = upTitle.split(" - ");
       finalTitle = parts[0].trim();
-      finalArtist = parts.slice(1).join(" - ").trim(); 
+      if (parts.length >= 2) finalArtist = parts[1].trim();
+      if (parts.length >= 3) finalQuote = parts.slice(2).join(" - ").trim(); 
     } 
     else if (upTitle.includes("-")) {
       const parts = upTitle.split("-");
       finalTitle = parts[0].trim();
-      finalArtist = parts.slice(1).join("-").trim();
+      if (parts.length >= 2) finalArtist = parts[1].trim();
+      if (parts.length >= 3) finalQuote = parts.slice(2).join("-").trim();
     }
 
     uploadSong(
       {
         title: finalTitle,
         artist: finalArtist,
+        quote: finalQuote,
         duration: upDuration,
         lyrics: lyricsJSON,
         audioFile: selectedFile,
       },
       () => {
-        showToast("Burn (Upload) thành công! 🔥", "success");
+        showToast("Burn (Upload) thành công!", "success");
         onUploadSuccess();
         setTimeout(() => {
           onClose(); // Đóng modal sau khi báo thành công
@@ -170,27 +185,27 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
         {/* TRANG TRÁI: REQUEST A SONG */}
         <div className="flex-1 p-8 md:p-12 relative flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-300 border-dashed">
           <div>
-            <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink mb-8">Request a Song</h3>
+            <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink mb-8">Request a song</h3>
             
             <div className="space-y-8">
               <div className="flex flex-col">
-                <label className="font-hand text-xl text-ink mb-1">Song Title...</label>
+                <label className="font-hand text-xl text-ink mb-1">Tên bài hát...</label>
                 <input 
                   type="text" 
                   value={songTitle}
                   onChange={(e) => setSongTitle(e.target.value)}
-                  placeholder="e.g. Midnight City" 
+                  placeholder="e.g. In love" 
                   className="w-full bg-transparent border-0 border-b-2 border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-2xl text-gray-600 placeholder:text-gray-300 transition-colors"
                 />
               </div>
 
               <div className="flex flex-col">
-                <label className="font-hand text-xl text-ink mb-1">Artist / Composer...</label>
+                <label className="font-hand text-xl text-ink mb-1">Nghệ sĩ / Nhạc sĩ...</label>
                 <input 
                   type="text" 
                   value={artist}
                   onChange={(e) => setArtist(e.target.value)}
-                  placeholder="e.g. M83" 
+                  placeholder="e.g. Low G, JustaTee" 
                   className="w-full bg-transparent border-0 border-b-2 border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-2xl text-gray-600 placeholder:text-gray-300 transition-colors"
                 />
               </div>
@@ -206,7 +221,7 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
           </div>
 
           <p className="font-hand text-gray-400 italic text-lg mt-12 leading-tight">
-            *Notes: Sometimes it takes a few days for the tape to arrive in the mail...
+            *Lưu ý: Đôi khi băng cassette sẽ mất vài giờ để đến tay bạn...
           </p>
         </div>
 
@@ -214,7 +229,7 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
         <div className="flex-1 p-8 md:p-10 relative flex flex-col justify-between bg-gradient-to-l from-gray-50/50 to-transparent">
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink">Upload Your Own</h3>
+              <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink">Upload (Phần của tui)</h3>
               {isUploading && <span className="text-sm font-mono text-blue-500 animate-pulse">Uploading...</span>}
             </div>
 

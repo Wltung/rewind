@@ -11,6 +11,7 @@ type Song struct {
 	ID            int64  `json:"id"`
 	Title         string `json:"title"`
 	Artist        string `json:"artist"`
+	Quote         string `json:"quote"`
 	AudioURL      string `json:"src"`
 	DurationLabel string `json:"duration"`
 	OrderIndex    int    `json:"order_index"`
