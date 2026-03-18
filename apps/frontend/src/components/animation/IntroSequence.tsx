@@ -23,19 +23,27 @@ const MESSAGES = [
 
 interface IntroSequenceProps {
   onPlayAudio: () => void;
-  onComplete: () => void;
+  // Thêm tham số skipToBook để báo cho trang cha biết là nhảy thẳng tới sách
+  onComplete: (skipToBook?: boolean) => void; 
 }
 
 export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequenceProps) {
-  // Đổi state mặc định từ "gate" thẳng sang "drift" để bỏ qua cổng mật khẩu
   const [step, setStep] = useState<"drift" | "whisper" | "fading-out">("drift");
   const [currentFrame, setCurrentFrame] = useState(0);
   const [messageOpacity, setMessageOpacity] = useState(0);
 
-  // Xử lý khi bấm nút Play
+  // Xử lý khi bấm nút Play (Xem từ từ)
   const handlePlay = () => {
     onPlayAudio();
     setStep("whisper");
+  };
+
+  // ---> XỬ LÝ KHI BẤM NÚT SKIP (Nhảy thẳng tới sách) <---
+  const handleSkip = () => {
+    onPlayAudio(); // Vẫn bật nhạc bình thường
+    setStep("fading-out");
+    // Gọi onComplete với tham số true để bỏ qua bước phong bì
+    setTimeout(() => onComplete(true), 1000);
   };
 
   // Logic chạy chữ tự động
@@ -43,15 +51,12 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
     if (step !== "whisper") return;
 
     if (currentFrame < MESSAGES.length) {
-      // Fade in chữ
       setMessageOpacity(1);
 
-      // Đợi 3.5s rồi fade out chữ để chuẩn bị đổi câu
       const fadeOutTimer = setTimeout(() => {
         setMessageOpacity(0);
       }, 3500);
 
-      // Đổi sang câu tiếp theo sau 4s
       const nextFrameTimer = setTimeout(() => {
         setCurrentFrame((prev) => prev + 1);
       }, 4000);
@@ -61,14 +66,12 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
         clearTimeout(nextFrameTimer);
       };
     } else {
-      // Khi đã chạy hết mảng chữ
       setMessageOpacity(1);
       
-      // Đợi 4 giây hiển thị câu chốt rồi bắt đầu fade out toàn bộ Intro
       const endTimer = setTimeout(() => {
         setStep("fading-out");
-        // Sau 1s mờ dần thì gọi onComplete để mở Sổ tay
-        setTimeout(onComplete, 1000);
+        // Gọi onComplete(false) để mở phong bì tuần tự
+        setTimeout(() => onComplete(false), 1000);
       }, 4000);
       
       return () => clearTimeout(endTimer);
@@ -77,21 +80,17 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
 
   return (
     <div 
-      // Xóa bg-[#E6E6FA] ở đây để lớp khung không bị giới hạn bởi viền an toàn nữa
       className={`fixed inset-0 z-[150] flex items-center justify-center font-body text-[#4A4A6A] transition-opacity duration-1000 ${
         step === "fading-out" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >
-      {/* 💥 HACK SAFARI: Tấm nền siêu to khổng lồ bành trướng ra ngoài 500px để che đứt mọi khe hở */}
       <div className="absolute -inset-[500px] bg-[#E6E6FA] -z-20"></div>
 
-      {/* Background Mesh (Hai khối màu di chuyển mờ ảo ở -z-10, nổi trên nền tím) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 blur-[80px] opacity-60">
         <div className="absolute top-[10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#FFD1DC] animate-blob"></div>
         <div className="absolute bottom-[10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#B0E0E6] animate-blob-delayed"></div>
       </div>
 
-      {/* STEP 2: Lựa chọn Hành động (Drift) */}
       {step === "drift" && (
         <div className="text-center animate-in fade-in zoom-in duration-700">
           
@@ -109,24 +108,28 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
               <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Mở thư</p>
             </div>
 
-            {/* NÚT 2: ĐÃ ĐƯỢC KHÓA LẠI - Bọc toàn bộ div trong cặp ngoặc nhọn */}
-            {/* <div className="flex flex-col items-center gap-3">
-              <Link href="/chapter-18">
-                <button className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]">
-                  <span className="material-symbols-outlined text-[32px] text-[#4A4A6A]">filter_vintage</span>
-                </button>
-              </Link>
-              <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Hoa nở</p>
-            </div> 
-            */}
+            {/* ---> NÚT 2: SKIP BỎ QUA <--- */}
+            <div className="flex flex-col items-center gap-3">
+              <button
+                onClick={handleSkip}
+                className="w-20 h-20 rounded-full border border-white/50 glass-panel flex justify-center items-center hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.5)]"
+              >
+                <span className="material-symbols-outlined text-[32px] text-[#4A4A6A]">skip_next</span>
+              </button>
+              <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Bỏ qua</p>
+            </div>
 
           </div>
 
-          <p className="font-['Lora'] italic text-lg font-medium tracking-wide opacity-80 mt-4">Đeo tai nghe vào nhé</p>
+          <p className="font-['Lora'] italic text-lg font-medium tracking-wide opacity-80 mt-4">
+            Đeo tai nghe vào nhé
+          </p>
+          <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-50 mt-2">
+            (Xem nhiều chán rồi thì bấm Bỏ qua nhảy tới sách luôn nha!)
+          </p>
         </div>
       )}
 
-      {/* STEP 3: Dòng chảy tin nhắn (Whisper) */}
       {step === "whisper" && (
         <div className="text-center max-w-2xl px-6 w-full">
           {currentFrame < MESSAGES.length ? (

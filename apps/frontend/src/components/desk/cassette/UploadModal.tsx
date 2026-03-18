@@ -1,0 +1,298 @@
+import { useSong } from "@/hooks/useSong";
+import { songService } from "@/services/song.service";
+import React, { useRef, useState, useEffect } from "react";
+
+interface UploadModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmitRequest: (title: string, artist: string) => void;
+  onUploadSuccess: () => void;
+}
+
+export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess }: UploadModalProps) {
+  // State lưu giá trị ô input
+  const [songTitle, setSongTitle] = useState("");
+  const [artist, setArtist] = useState("");
+
+  // State: Upload Your Own (Trang Phải - Admin)
+  const [upTitle, setUpTitle] = useState("");
+  const [upDuration, setUpDuration] = useState("90 MIN");
+  const [upArtist, setUpArtist] = useState("");
+  const [lyricsJSON, setLyricsJSON] = useState(`[\n  {"time": 0, "text": "Intro..."}\n]`);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Lấy hàm upload và trạng thái từ Hook
+  const { uploadSong, isUploading, error } = useSong();
+
+  // State CHO NCT API
+  const [nctKey, setNctKey] = useState("");
+  const [isFetchingLyrics, setIsFetchingLyrics] = useState(false);
+
+  // ---> STATE CHO THÔNG BÁO (TOAST MESSAGE)
+  const [toast, setToast] = useState<{ msg: string; type: "error" | "success" } | null>(null);
+
+  // Hàm hiển thị thông báo
+  const showToast = (msg: string, type: "error" | "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Bắt lỗi từ Hook API nếu có để quăng vào Toast
+  useEffect(() => {
+    if (error) showToast(error, "error");
+  }, [error]);
+
+  // HÀM XỬ LÝ AUTO-FILL
+  const handleAutoFillLyrics = async () => {
+    if (!nctKey.trim()) {
+      showToast("Vui lòng nhập NCT Song Key (VD: AT9rsVdeI9yc)", "error");
+      return;
+    }
+    setIsFetchingLyrics(true);
+    try {
+      const data = await songService.fetchNCTLyrics(nctKey);
+      if (data && data.length > 0) {
+        setLyricsJSON(JSON.stringify(data, null, 2));
+        showToast("Lấy lời bài hát thành công! ✨", "success");
+      } else {
+        showToast("Không tìm thấy lời hoặc lỗi định dạng!", "error");
+      }
+    } catch (err: any) {
+      showToast(err.message || "Lỗi khi lấy lời bài hát!", "error");
+    } finally {
+      setIsFetchingLyrics(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  // Xử lý khi bấm nút Pin to Desk
+  const handlePinToDesk = () => {
+    if (!songTitle.trim()) {
+      showToast("Vui lòng điền tên bài hát muốn yêu cầu nhé!", "error");
+      return;
+    }
+    
+    showToast("Đã ghim yêu cầu lên mặt bàn! 📌", "success");
+    // Delay một chút để user kịp nhìn thấy thông báo rồi mới đóng Modal
+    setTimeout(() => {
+      onSubmitRequest(songTitle, artist);
+    }, 1200);
+  };
+
+  // Xử lý Upload thực tế
+  const handleBurnToTape = () => {
+    if (!upTitle || !selectedFile || !lyricsJSON) {
+      showToast("Vui lòng điền đủ Tên bài, File MP3 và JSON Lyrics!", "error");
+      return;
+    }
+
+    // XỬ LÝ PARSE TÊN BÀI VÀ CA SĨ
+    let finalTitle = upTitle.trim();
+    let finalArtist = upArtist;
+
+    if (upTitle.includes(" - ")) {
+      const parts = upTitle.split(" - ");
+      finalTitle = parts[0].trim();
+      finalArtist = parts.slice(1).join(" - ").trim(); 
+    } 
+    else if (upTitle.includes("-")) {
+      const parts = upTitle.split("-");
+      finalTitle = parts[0].trim();
+      finalArtist = parts.slice(1).join("-").trim();
+    }
+
+    uploadSong(
+      {
+        title: finalTitle,
+        artist: finalArtist,
+        duration: upDuration,
+        lyrics: lyricsJSON,
+        audioFile: selectedFile,
+      },
+      () => {
+        showToast("Burn (Upload) thành công! 🔥", "success");
+        onUploadSuccess();
+        setTimeout(() => {
+          onClose(); // Đóng modal sau khi báo thành công
+        }, 1200);
+      }
+    );
+  };
+
+  return (
+    <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+
+      <style>{`
+        @keyframes pop-bounce {
+          0% { transform: scale(0.8); opacity: 0; }
+          60% { transform: scale(1.02); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-bounce {
+          animation: pop-bounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes fade-in-down {
+          0% { opacity: 0; transform: translate(-50%, -20px); }
+          100% { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-fade-in-down {
+          animation: fade-in-down 0.3s ease-out forwards;
+        }
+      `}</style>
+
+      <div className="relative w-full max-w-4xl bg-[#FDFBF7] shadow-2xl rounded-sm flex flex-col md:flex-row animate-pop-bounce transform rotate-1">
+        
+        <button onClick={onClose} className="absolute -top-4 -right-4 w-10 h-10 bg-[#FF5A5A] rounded-full shadow-[2px_4px_10px_rgba(0,0,0,0.3)] border-2 border-white flex items-center justify-center text-white hover:scale-110 transition-transform z-50">
+          <span className="material-symbols-outlined text-xl font-bold">close</span>
+        </button>
+
+        {/* ---> TOAST NOTIFICATION GIAO DIỆN <--- */}
+        {toast && (
+          <div className={`absolute -top-6 left-1/2 -translate-x-1/2 px-6 py-2 rounded shadow-md border animate-fade-in-down z-50 flex items-center gap-2 ${
+            toast.type === "error" ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700"
+          }`}>
+            <span className="material-symbols-outlined text-[18px]">
+              {toast.type === "error" ? "error" : "check_circle"}
+            </span>
+            <span className="font-mono text-sm font-bold tracking-wide whitespace-nowrap">{toast.msg}</span>
+          </div>
+        )}
+        {/* ------------------------------------------ */}
+
+        <div className="absolute -top-3 left-[20%] w-16 h-6 bg-blue-200/70 backdrop-blur-sm shadow-sm transform -rotate-2 z-20 border border-blue-100" />
+        <div className="absolute -top-3 right-[30%] w-12 h-6 bg-pink-200/70 backdrop-blur-sm shadow-sm transform rotate-3 z-20 border border-pink-100" />
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/noise.png')] pointer-events-none" />
+
+        {/* TRANG TRÁI: REQUEST A SONG */}
+        <div className="flex-1 p-8 md:p-12 relative flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-300 border-dashed">
+          <div>
+            <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink mb-8">Request a Song</h3>
+            
+            <div className="space-y-8">
+              <div className="flex flex-col">
+                <label className="font-hand text-xl text-ink mb-1">Song Title...</label>
+                <input 
+                  type="text" 
+                  value={songTitle}
+                  onChange={(e) => setSongTitle(e.target.value)}
+                  placeholder="e.g. Midnight City" 
+                  className="w-full bg-transparent border-0 border-b-2 border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-2xl text-gray-600 placeholder:text-gray-300 transition-colors"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="font-hand text-xl text-ink mb-1">Artist / Composer...</label>
+                <input 
+                  type="text" 
+                  value={artist}
+                  onChange={(e) => setArtist(e.target.value)}
+                  placeholder="e.g. M83" 
+                  className="w-full bg-transparent border-0 border-b-2 border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-2xl text-gray-600 placeholder:text-gray-300 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Nút Pin To Desk */}
+            <button 
+              onClick={handlePinToDesk}
+              className="mt-10 px-6 py-2 bg-[#2C3A47] text-white font-hand font-bold text-xl rounded-sm shadow-[3px_3px_0_rgba(0,0,0,0.8)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_rgba(0,0,0,0.8)] transition-all"
+            >
+              Pin to Desk
+            </button>
+          </div>
+
+          <p className="font-hand text-gray-400 italic text-lg mt-12 leading-tight">
+            *Notes: Sometimes it takes a few days for the tape to arrive in the mail...
+          </p>
+        </div>
+
+        {/* TRANG PHẢI: UPLOAD YOUR OWN (Admin) */}
+        <div className="flex-1 p-8 md:p-10 relative flex flex-col justify-between bg-gradient-to-l from-gray-50/50 to-transparent">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-hand font-bold text-3xl md:text-4xl text-ink">Upload Your Own</h3>
+              {isUploading && <span className="text-sm font-mono text-blue-500 animate-pulse">Uploading...</span>}
+            </div>
+
+            {/* ---> KHỐI GIAO DIỆN MỚI: AUTO-FILL NCT LYRICS <--- */}
+            <div className="flex items-center gap-2 mb-4 bg-white/40 p-2 rounded border border-gray-200 shadow-sm">
+              <span className="material-symbols-outlined text-green-600 text-xl">smart_toy</span>
+              <input 
+                type="text" 
+                value={nctKey} 
+                onChange={(e) => setNctKey(e.target.value)}
+                placeholder="NCT Song Key (e.g. AT9rsV...)" 
+                className="flex-1 bg-transparent border-b border-gray-300 focus:border-ink outline-none px-1 py-0.5 font-mono text-xs text-gray-700 placeholder:text-gray-400"
+              />
+              <button 
+                onClick={handleAutoFillLyrics}
+                disabled={isFetchingLyrics}
+                className="px-3 py-1 bg-green-100 text-green-700 hover:bg-green-200 font-mono text-xs font-bold rounded border border-green-300 transition-colors disabled:opacity-50"
+              >
+                {isFetchingLyrics ? 'Fetching...' : 'Auto-Fill'}
+              </button>
+            </div>
+            
+            {/* Vùng Drop MP3 (Nhấn vào để chọn file) */}
+            <input 
+              type="file" 
+              accept=".mp3,audio/*"
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+            />
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full h-24 mb-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-white/50 cursor-pointer hover:bg-white hover:border-blue-400 transition-colors group"
+            >
+              <span className="material-symbols-outlined text-3xl text-gray-400 group-hover:text-blue-500 transition-colors mb-1">
+                {selectedFile ? 'check_circle' : 'audio_file'}
+              </span>
+              <p className="font-hand text-xl text-ink">
+                {selectedFile ? selectedFile.name : "Click to select .MP3"}
+              </p>
+            </div>
+
+            {/* Khung nhập Tên bài & Lyrics */}
+            <div className="flex gap-4 mb-4">
+              <input 
+                type="text" value={upTitle} onChange={(e) => setUpTitle(e.target.value)}
+                placeholder="Song Title - Artist..." 
+                className="w-2/3 bg-transparent border-0 border-b border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-xl text-gray-600 placeholder:text-gray-400"
+              />
+              <input 
+                type="text" value={upDuration} onChange={(e) => setUpDuration(e.target.value)}
+                placeholder="Duration (e.g. 90 MIN)" 
+                className="w-1/3 bg-transparent border-0 border-b border-dashed border-gray-300 focus:border-ink focus:ring-0 px-1 py-1 font-hand text-xl text-gray-600 text-right placeholder:text-gray-400"
+              />
+            </div>
+
+            <div className="flex flex-col mb-4">
+              <label className="font-hand text-lg text-ink mb-1">Lyric Metadata (JSON)</label>
+              <div className="relative">
+                <textarea 
+                  value={lyricsJSON}
+                  onChange={(e) => setLyricsJSON(e.target.value)}
+                  className="w-full h-28 bg-[#EFEBE0] rounded-sm shadow-inner p-3 font-mono text-xs text-gray-600 outline-none focus:ring-2 focus:ring-blue-400/50 resize-none border border-gray-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleBurnToTape}
+            disabled={isUploading}
+            className={`w-full px-6 py-3 text-white font-mono font-bold tracking-widest text-sm uppercase rounded-sm shadow-[4px_4px_0_rgba(0,0,0,0.8)] transition-all ${isUploading ? 'bg-gray-400' : 'bg-[#1877F2] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_rgba(0,0,0,0.8)]'}`}
+          >
+            {isUploading ? 'Burning...' : 'Burn to Tape'}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}

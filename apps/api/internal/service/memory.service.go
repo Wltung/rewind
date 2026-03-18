@@ -7,7 +7,8 @@ import (
 
 type MemoryService interface {
 	GetAll() ([]model.Memory, error)
-	GetRandom() (*model.Memory, error)
+	GetRandom(excludeID int64) (*model.Memory, error)
+	CreateMemory(memory *model.Memory) error
 }
 
 type memoryService struct {
@@ -23,6 +24,10 @@ func (s *memoryService) GetAll() ([]model.Memory, error) {
 	return s.repo.FindAll()
 }
 
-func (s *memoryService) GetRandom() (*model.Memory, error) {
-	return s.repo.FindRandom()
+func (s *memoryService) GetRandom(excludeID int64) (*model.Memory, error) {
+	return s.repo.FindRandom(excludeID) // Sửa dòng này
+}
+
+func (s *memoryService) CreateMemory(memory *model.Memory) error {
+	return s.repo.CreateMemory(memory)
 }

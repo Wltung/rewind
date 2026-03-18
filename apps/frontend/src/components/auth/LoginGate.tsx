@@ -1,90 +1,124 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface LoginGateProps {
-  onSuccess: () => void; // Hàm gọi khi mở khóa thành công để chuyển sang cái bàn học
+  onSuccess: () => void;
 }
 
 export default function LoginGate({ onSuccess }: LoginGateProps) {
-  const [password, setPassword] = useState("");
-  const [isFading, setIsFading] = useState(false);
+  const [passcode, setPasscode] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   
-  // Gọi trực tiếp custom hook thay vì tự fetch lỉnh kỉnh
-  const { login, isLoading, error } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { login } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.length < 4) return;
+  useEffect(() => {
+    sessionStorage.removeItem("hasSeenDeskIntro");
+    
+    if (passcode.length === 4 && !isSuccess && !isError) {
+      handleAuthenticate(passcode);
+    }
+  }, [passcode, isSuccess, isError]);
 
-    // Truyền dữ liệu vào hàm login của hook
-    const isSuccess = await login({ password });
+  const handleAuthenticate = async (code: string) => {
+    const success = await login({ password: code });
 
-    if (isSuccess) {
-      // Nếu đăng nhập đúng, chạy hiệu ứng mờ dần
-      setIsFading(true);
-      setTimeout(() => {
-        onSuccess();
-      }, 1000); // Đợi 1s cho animation chạy xong rồi mới lật trang
+    if (success) {
+      setIsSuccess(true);
+      // Đợi 0.3s để người dùng kịp nhìn thấy số đúng, sau đó bắt đầu mờ đi
+      setTimeout(() => setIsFadingOut(true), 300);
+      setTimeout(() => onSuccess(), 1500);
     } else {
-      // Đăng nhập sai thì xóa trắng ô nhập để gõ lại (lỗi đã được hook xử lý)
-      setPassword("");
+      setIsError(true);
+      setTimeout(() => {
+        setIsError(false);
+        setPasscode("");
+        inputRef.current?.focus();
+      }, 600);
     }
   };
+  
 
   return (
-    <div
-      className={`fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#E6E6FA] transition-opacity duration-1000 ${
-        isFading ? "opacity-0 pointer-events-none" : "opacity-100"
-      }`}
-    >
-      {/* Background mờ ảo */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none blur-[80px] opacity-50">
-        <div className="absolute top-[20%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-[#FFD1DC] animate-pulse"></div>
-        <div
-          className="absolute bottom-[20%] right-[20%] w-[30vw] h-[30vw] rounded-full bg-[#B0E0E6] animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Noto+Serif:wght@500&display=swap');
+        @keyframes error-shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-8px); }
+          40%, 80% { transform: translateX(8px); }
+        }
+        .animate-error-shake {
+          animation: error-shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+      `}</style>
 
-      {/* Khung nhập mật khẩu */}
-      <div className="relative z-10 p-10 rounded-[30px] bg-white/30 backdrop-blur-md border border-white/40 shadow-xl text-center flex flex-col items-center max-w-sm w-full mx-4">
-        <h1 className="font-['Lora'] text-2xl italic text-[#4A4A6A] mb-2 font-semibold">
-          Class 12A5
-        </h1>
-        <p className="font-['Baloo_2'] text-sm text-[#4A4A6A]/80 mb-8">
-          Nhập mã số bí mật để mở ngăn bàn
-        </p>
+      <div 
+        className="fixed inset-0 z-[200] flex items-center justify-center bg-[#2C3A31] overflow-hidden"
+        onClick={() => inputRef.current?.focus()}
+      >
+        <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" 
+             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+        </div>
 
-        <form onSubmit={handleLogin} className="flex flex-col items-center w-full">
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="****"
-            maxLength={4}
-            disabled={isLoading || isFading}
-            className="bg-transparent border-b-2 border-[#4A4A6A]/40 font-mono text-4xl text-[#4A4A6A] text-center w-[120px] outline-none mb-6 tracking-[8px] placeholder:text-[#4A4A6A]/20 transition-all focus:border-[#4A4A6A] disabled:opacity-50"
-          />
-
-          <div className="h-6 mb-4">
-            {error && (
-              <p className="font-['Baloo_2'] text-sm text-red-400 animate-in fade-in slide-in-from-bottom-2">
-                {error}
-              </p>
-            )}
+        {/* HIỆU ỨNG THOÁT: Ổ khóa từ từ phóng to (scale-110), mờ đi (opacity-0) và nhòe dần (blur-md) */}
+        <div className={`relative z-10 flex flex-col items-center max-w-md w-full px-6 transition-all duration-1000 ease-in-out origin-center ${
+          isFadingOut ? "scale-110 opacity-0 blur-md pointer-events-none" : "scale-100 opacity-100"
+        }`}>
+          
+          <div className="bg-[#F4EFE6] shadow-[0_4px_10px_rgba(0,0,0,0.3)] rounded-sm p-4 pb-12 mb-[-32px] relative z-0 w-64 -rotate-2 translate-y-2 border border-[#e2d5c3]">
+            <div className="absolute inset-0 opacity-20 pointer-events-none rounded-sm"
+                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`}}>
+            </div>
+            <p className="font-['Caveat',_cursive] text-[#8C8477] text-[26px] text-center leading-tight pt-2 opacity-90">
+              For my eyes only...
+            </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || isFading || password.length < 4}
-            className="px-6 py-2 rounded-full bg-[#4A4A6A] text-white font-['Baloo_2'] text-sm tracking-wide hover:bg-[#3a3a5a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-          >
-            {isLoading ? "Đang mở..." : "Mở cửa"}
-          </button>
-        </form>
+          <div className={`bg-[linear-gradient(135deg,#e0c89c_0%,#C5A880_40%,#a68453_100%)] p-5 rounded-md shadow-[0_10px_25px_rgba(0,0,0,0.5),inset_0_2px_4px_rgba(255,255,255,0.3)] relative z-10 border border-[#d4b992] flex flex-col items-center transition-transform ${isError ? 'animate-error-shake' : ''}`}>
+            <div className="w-full flex justify-between px-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-[#8c6d40] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] relative flex items-center justify-center"><div className="w-full h-[1.5px] bg-[#4a3a22] rotate-45"></div></div>
+              <div className="w-3 h-3 rounded-full bg-[#8c6d40] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] relative flex items-center justify-center"><div className="w-full h-[1.5px] bg-[#4a3a22] -rotate-12"></div></div>
+            </div>
+
+            <div className="flex gap-3 bg-[#1a1612] p-3 rounded-sm shadow-[inset_0_4px_8px_rgba(0,0,0,0.8)] border border-[#5c4a32] relative">
+              <input
+                ref={inputRef}
+                type="tel"
+                inputMode="numeric"
+                maxLength={4}
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value.replace(/\D/g, ''))}
+                disabled={isError || isSuccess}
+                className="absolute opacity-0 w-0 h-0 z-[-1]"
+                autoFocus
+              />
+              {[0, 1, 2, 3].map((index) => {
+                const hasValue = index < passcode.length;
+                const value = hasValue ? passcode[index] : "0";
+
+                return (
+                  <div key={index} className="relative w-12 h-16 sm:w-14 sm:h-20 bg-[#F4EFE6] rounded-sm shadow-[inset_0_4px_6px_rgba(0,0,0,0.4),inset_0_-2px_4px_rgba(255,255,255,0.5)] overflow-hidden flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none"></div>
+                    <span className={`font-['Noto_Serif',_serif] text-4xl sm:text-[40px] font-medium transition-colors ${hasValue ? "text-[#2B2724]" : "text-[#2B2724]/40"}`}>
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="w-full flex justify-between px-2 mt-4">
+              <div className="w-3 h-3 rounded-full bg-[#8c6d40] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] relative flex items-center justify-center"><div className="w-full h-[1.5px] bg-[#4a3a22] rotate-90"></div></div>
+              <div className="w-3 h-3 rounded-full bg-[#8c6d40] shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] relative flex items-center justify-center"><div className="w-full h-[1.5px] bg-[#4a3a22] rotate-0"></div></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

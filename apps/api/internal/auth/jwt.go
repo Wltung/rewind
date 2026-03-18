@@ -13,7 +13,7 @@ import (
 func GenerateToken() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"authorized": true,
-		"exp":        time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"exp":        time.Now().Add(time.Hour * 24 * 3).Unix(),
 	})
 
 	return token.SignedString([]byte(config.Cfg.JWTSecret))

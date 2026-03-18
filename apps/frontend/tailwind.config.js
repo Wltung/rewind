@@ -14,6 +14,12 @@ module.exports = {
         },
         extend: {
             colors: {
+                "primary": "#1173d4", // Mực xanh bút máy
+                "background-light": "#f6f7f8",
+                "background-dark": "#101922",
+                "ink": "#2C3E50",
+                "desk": "#D7C9AA", // Màu gỗ bàn
+                "paper": "#FDFBF7", // Màu giấy
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',
@@ -63,16 +69,20 @@ module.exports = {
                 }
             },
             fontFamily: {
-                display: [
-                    'Inter',
-                    'sans-serif'
-                ]
+                "display": ["Newsreader", "serif"],
+                "hand": ["Caveat",
+                    "Patrick Hand"
+                ], // Chữ viết tay
+                "typewriter": ["Courier Prime", "monospace"],
             },
             borderRadius: {
                 lg: 'var(--radius)',
                 md: 'calc(var(--radius) - 2px)',
                 sm: 'calc(var(--radius) - 4px)'
-            }
+            },
+            boxShadow: {
+                'paper': '2px 2px 4px rgba(0,0,0,0.1)',
+            },
         }
     },
     plugins: [require('tailwindcss-animate')],

@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // ---> THÊM ROUTER
+import gsap from "gsap"; // ---> THÊM GSAP
 
 // Components khung
 import BookAnimation from "@/components/BookAnimation";
@@ -34,6 +36,7 @@ const bookPages = [
 ];
 
 export default function Home() {
+  const router = useRouter(); // ---> KHỞI TẠO ROUTER
   const audioRef = useRef<HTMLAudioElement>(null);
   
   const [stage, setStage] = useState<0 | 1 | 2 | 3>(0); 
@@ -45,8 +48,6 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [isBookOpening, setIsBookOpening] = useState(false);
   const [isLandscapeReady, setIsLandscapeReady] = useState(false);
-
-  // STATE MỚI: Quản lý hiệu ứng Camera thu nhỏ (Zoom-out)
   const [isCameraZoomingOut, setIsCameraZoomingOut] = useState(true);
 
   useEffect(() => {
@@ -66,10 +67,8 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // EFFECT MỚI: Kích hoạt từ từ thu nhỏ khi thư đã mở xong (stage 2)
   useEffect(() => {
     if (stage === 2) {
-       // Đợi 50ms để DOM kịp render kích thước bự, sau đó kích hoạt CSS thu nhỏ
        const timer = setTimeout(() => setIsCameraZoomingOut(false), 50);
        return () => clearTimeout(timer);
     }
@@ -84,6 +83,33 @@ export default function Home() {
     setTimeout(() => setIsBookFullyOpen(true), 1200);
   };
 
+  // ---> HÀM GSAP KÉO RÈM TÍM VÀ QUAY VỀ DESK <---
+  const handleReturnToDesk = () => {
+    // 1. Tạo rèm che màu Tím Nhạt (cùng màu với IntroSequence)
+    const exitOverlay = document.createElement("div");
+    exitOverlay.className = "fixed inset-0 bg-[#E6E6FA] z-[9999] opacity-0 pointer-events-none";
+    document.body.appendChild(exitOverlay);
+
+    // 2. Kéo rèm lên làm mờ cuốn sách
+    gsap.to(exitOverlay, {
+      opacity: 1,
+      duration: 0.6,
+      ease: "power2.inOut",
+      onComplete: () => {
+        // Tắt nhạc nền trước khi đi để không bị vọng âm sang trang Desk
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        
+        // 3. Đẩy về trang chủ kèm cờ "envelope" để Desk giăng sẵn rèm tím đón đầu
+        router.push("/?from=envelope");
+        
+        // 4. Dọn rác DOM
+        setTimeout(() => exitOverlay.remove(), 1000);
+      }
+    });
+  };
+
   return (
     <main className="min-h-screen relative overflow-hidden flex items-center justify-center selection:bg-yellow-200 bg-[#c2a77d]"
           style={{ backgroundImage: "repeating-linear-gradient(to right, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 15px), repeating-linear-gradient(to bottom, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 30px)" }}>
@@ -92,23 +118,19 @@ export default function Home() {
       <div className="absolute inset-0 golden-hour-overlay pointer-events-none z-0"></div>
       <div className="absolute inset-0 noise-overlay pointer-events-none z-0"></div>
 
-      {stage >= 1 && (
-        <div className="fixed inset-0 z-[100] bg-[#c2a77d] flex-col items-center justify-center text-[#2c3e50] hidden max-md:portrait:flex shadow-2xl">
-          <span className="material-symbols-outlined text-[80px] mb-6 animate-[spin_3s_linear_infinite] opacity-80">screen_rotation</span>
-          <p className="text-center px-8 font-['Caveat'] text-4xl font-bold leading-relaxed">Xoay ngang máy nhé!</p>
-
-          {/* Lời nhắc chuyên trị Zalo/Messenger */}
-          <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl max-w-[80%] border border-white/30 text-center animate-pulse">
-            <p className="font-['Lora'] text-sm italic font-medium">
-              💡 Bị kẹt không xoay được?<br/>
-              Nhấn vào dấu <strong className="text-xl">⋮</strong> hoặc <strong className="text-xl">...</strong> ở góc phải màn hình và chọn <br/>
-              <span className="bg-[#8a3324] text-white px-2 py-1 rounded mt-2 inline-block not-italic shadow-md">Mở bằng trình duyệt/Safari (Open in Safari/Chrome)</span>
-            </p>
-          </div>
+      {/* ---> NÚT BACK TO DESK (Chỉ hiện khi đã vào tới sách để không phá vỡ Intro) <--- */}
+      {stage >= 2 && (
+        <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[9999]">
+          <button 
+            onClick={handleReturnToDesk}
+            className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7]/90 backdrop-blur-sm px-3 md:px-4 py-2 shadow-[2px_2px_0px_rgba(0,0,0,0.15)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-[#d4c5a3]"
+          >
+            <span className="material-symbols-outlined text-lg md:text-xl text-[#4a3a22]">arrow_back</span>
+            <span className="font-display font-bold text-xs md:text-sm tracking-wide text-[#4a3a22]">BACK TO DESK</span>
+          </button>
         </div>
       )}
 
-      {/* ================= THÊM BLOCK NÀY VÀO ================= */}
       {stage === 0 && (
         <IntroSequence
           onPlayAudio={() => {
@@ -119,20 +141,16 @@ export default function Home() {
           onComplete={() => setStage(1)} 
         />
       )}
-      {/* ====================================================== */}
 
       {stage === 1 && isLandscapeReady && <EnvelopeTransition onComplete={() => setStage(2)} />}
 
       {stage >= 2 && (
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none z-10">
           
-          {/* ĐÃ CHỈNH SỬA: Bọc khối Sách bằng hiệu ứng Zoom-out điện ảnh */}
           <div className="relative w-[1024px] h-[750px] flex items-center justify-center pointer-events-auto"
                style={{ 
-                 // Khi vừa xuất hiện sẽ bự gấp 1.4 lần, sau đó từ từ lùi về mức scale chuẩn
                  transform: mounted ? `scale(${isCameraZoomingOut ? scale * 1.4 : scale})` : "scale(1)", 
                  transformOrigin: "center center", 
-                 // Thời gian chuyển động kéo dài 1.5 giây với gia tốc mềm mại (cubic-bezier)
                  transition: "transform 1.5s cubic-bezier(0.22, 1, 0.36, 1)" 
                }}>
             

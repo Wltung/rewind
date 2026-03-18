@@ -7,13 +7,12 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLoginSuccess = () => {
-    // Chuyển hướng về trang chủ sau khi nhập đúng pass và chạy xong animation lùi mờ
-    router.push("/");
+    router.push("/?from=login");
   };
 
   return (
-    <main className="min-h-screen bg-[#E6E6FA] relative overflow-hidden">
-      {/* Gọi component LoginGate và truyền hàm xử lý khi thành công vào */}
+    // Đổi bg-[#E6E6FA] thành bg-[#2C3A31]
+    <main className="min-h-screen bg-[#2C3A31] relative overflow-hidden">
       <LoginGate onSuccess={handleLoginSuccess} />
     </main>
   );

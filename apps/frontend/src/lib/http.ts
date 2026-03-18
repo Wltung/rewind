@@ -1,5 +1,5 @@
 // apps/frontend/lib/http.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:9001/api";
 
 export const http = {
   async get<T>(endpoint: string): Promise<T> {
@@ -19,13 +19,20 @@ export const http = {
   },
 
   async post<T>(endpoint: string, body: any): Promise<T> {
+    const isFormData = body instanceof FormData;
+
+    const headers: HeadersInit = {};
+    // Chỉ ép kiểu JSON nếu không phải là FormData
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers, // Truyền headers đã xử lý linh hoạt
       credentials: "include",
-      body: JSON.stringify(body),
+      // Không stringify nếu là FormData để giữ nguyên vẹn file
+      body: isFormData ? body : JSON.stringify(body),
     });
 
     if (!res.ok) {
