@@ -1,11 +1,13 @@
 package http
 
 import (
+	"rewind/api/internal/config"
 	"rewind/api/internal/db"
 	"rewind/api/internal/http/handler"
 	"rewind/api/internal/http/middleware"
 	"rewind/api/internal/repository"
 	"rewind/api/internal/service"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -15,10 +17,17 @@ func SetupRouter(r *gin.Engine) {
 	// --- CẤU HÌNH CORS NÀY VÀO ĐẦU ---
 	configCORS := cors.DefaultConfig()
 
-	configCORS.AllowOrigins = []string{"http://localhost:3000", "rewind-frontend-jet.vercel.app"}
+	rawOrigins := strings.Split(config.Cfg.AllowedOrigins, ",")
+	var origins []string
+	for _, o := range rawOrigins {
+		// Dọn dẹp dấu cách thừa để tránh lỗi panic như lúc nãy
+		origins = append(origins, strings.TrimSpace(o))
+	}
+
+	configCORS.AllowOrigins = origins
 	configCORS.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	configCORS.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "Cookie"}
-	configCORS.AllowCredentials = true // Cực kỳ quan trọng để trình duyệt chịu gửi/nhận Cookie
+	configCORS.AllowCredentials = true
 
 	r.Use(cors.New(configCORS))
 	// -------------------------------------------
