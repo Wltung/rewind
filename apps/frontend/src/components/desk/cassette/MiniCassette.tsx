@@ -10,7 +10,8 @@ export function MiniCassette({ currentTrack, isPlaying, onOpen }: MiniCassettePr
   return (
     <button 
       onClick={onOpen}
-      className="hover-lift group absolute bottom-0 left-4 lg:bottom-8 lg:left-12 xl:bottom-16 xl:left-24 z-20 w-[260px] lg:w-[300px] h-36 lg:h-40 bg-[#333] rounded-lg shadow-xl p-3 flex flex-col items-center justify-center transform -rotate-3 cursor-pointer border border-gray-700" 
+      // THAY ĐỔI Ở ĐÂY: Dùng % cho tọa độ, dùng aspect-[1.8] thay cho chiều cao cố định
+      className="hover-lift group absolute bottom-[5%] left-[3%] md:bottom-[10%] md:left-[10%] z-20 w-48 sm:w-56 md:w-[260px] lg:w-[300px] aspect-[1.8] bg-[#333] rounded-lg shadow-xl p-2 md:p-3 flex flex-col items-center justify-center transform -rotate-3 cursor-pointer border border-gray-700" 
       style={{ '--hover-rotate': '-5deg' } as React.CSSProperties}
     >
       <div className="absolute inset-0 bg-white/5 rounded-lg pointer-events-none" />

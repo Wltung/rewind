@@ -31,8 +31,8 @@ export function Envelope() {
 
   return (
     <button 
-      onClick={handleOpenEnvelope} // ---> ĐỔI SỰ KIỆN Ở ĐÂY
-      className="hover-lift absolute md:bottom-20 md:right-32 bottom-20 right-8 z-20 w-56 h-36 bg-[#fdfbf7] shadow-lg transform rotate-2 cursor-pointer border border-gray-200 group" 
+      onClick={handleOpenEnvelope} 
+      className="hover-lift absolute bottom-[5%] right-[2%] md:bottom-[15%] md:right-[15%] z-20 w-32 sm:w-40 md:w-56 aspect-[1.5] bg-[#fdfbf7] shadow-lg transform rotate-2 cursor-pointer border border-gray-200 group" 
       style={{ '--hover-rotate': '0deg' } as React.CSSProperties}
     >
       <div className="absolute top-0 left-0 w-full h-0 border-l-[112px] border-l-transparent border-r-[112px] border-r-transparent border-t-[80px] border-t-[#f2efe9] shadow-sm z-10 origin-top transition-transform duration-500 group-hover:scale-y-90" />
