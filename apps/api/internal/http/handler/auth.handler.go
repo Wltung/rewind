@@ -43,8 +43,9 @@ func Login(c *gin.Context) {
 	}
 
 	// Nhét Token vào HTTP-Only Cookie
-	// Các tham số: name, value, maxAge (giây), path, domain, secure, httpOnly
-	c.SetCookie("rewind_auth", tokenString, 3600*24*7, "/", "localhost", false, true)
+	// Cấu hình lại: domain rỗng (""), secure = true, sameSite = None (bắt buộc cho Cross-Origin)
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("rewind_auth", tokenString, 3600*24*7, "/", "", true, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Mở khóa thành công!"})
 }
@@ -67,6 +68,7 @@ func CheckAuth(c *gin.Context) {
 
 // Logout dùng để xóa Cookie
 func Logout(c *gin.Context) {
-	c.SetCookie("rewind_auth", "", -1, "/", "localhost", false, true)
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("rewind_auth", "", -1, "/", "", true, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Đã khóa không gian"})
 }

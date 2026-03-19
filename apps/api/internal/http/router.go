@@ -7,10 +7,22 @@ import (
 	"rewind/api/internal/repository"
 	"rewind/api/internal/service"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(r *gin.Engine) {
+	// --- CẤU HÌNH CORS NÀY VÀO ĐẦU ---
+	configCORS := cors.DefaultConfig()
+
+	configCORS.AllowOrigins = []string{"http://localhost:3000", "https://rewind-api-2muu.onrender.com"}
+	configCORS.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	configCORS.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "Cookie"}
+	configCORS.AllowCredentials = true // Cực kỳ quan trọng để trình duyệt chịu gửi/nhận Cookie
+
+	r.Use(cors.New(configCORS))
+	// -------------------------------------------
+
 	r.Static("/music", "./uploads/music")
 	r.Static("/images", "./uploads/images")
 
