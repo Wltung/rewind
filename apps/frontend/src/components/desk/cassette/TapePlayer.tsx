@@ -98,7 +98,7 @@ export function TapePlayer({
                 <div className="w-6 h-6 bg-black/20 rounded-full absolute" />
               </div>
               {/* Lõi băng bên phải (to dần) */}
-              <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000" style={{ borderWidth: `${10 + (progress / 10)}px` }} />
+              <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000" style={{ borderWidth: `${10 - (progress / 10)}px` }} />
             </div>
           </div>
         </div>

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react"; // ---> THÊM USEREF
+import gsap from "gsap"; // ---> IMPORT GSAP
+import { useGSAP } from "@gsap/react"; // ---> IMPORT USEGSAP
 
 const MESSAGES = [
   "Hey, cô bạn nhỏ.",
@@ -23,8 +25,8 @@ const MESSAGES = [
 
 interface IntroSequenceProps {
   onPlayAudio: () => void;
-  // Thêm tham số skipToBook để báo cho trang cha biết là nhảy thẳng tới sách
-  onComplete: (skipToBook?: boolean) => void; 
+  // Sửa complete nhảy stage 2
+  onComplete: () => void; 
 }
 
 export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequenceProps) {
@@ -32,21 +34,40 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
   const [currentFrame, setCurrentFrame] = useState(0);
   const [messageOpacity, setMessageOpacity] = useState(0);
 
-  // Xử lý khi bấm nút Play (Xem từ từ)
+  // ---> THÊM REFS CHUYỂN CẢNH <---
+  const containerRef = useRef<HTMLDivElement>(null);
+  const driftRef = useRef<HTMLDivElement>(null);
+
   const handlePlay = () => {
     onPlayAudio();
     setStep("whisper");
   };
 
-  // ---> XỬ LÝ KHI BẤM NÚT SKIP (Nhảy thẳng tới sách) <---
+  // ---> HÀM BỎ QUA <---
   const handleSkip = () => {
-    onPlayAudio(); // Vẫn bật nhạc bình thường
+    onPlayAudio(); // Vẫn bật nhạc
     setStep("fading-out");
-    // Gọi onComplete với tham số true để bỏ qua bước phong bì
-    setTimeout(() => onComplete(true), 1000);
+    setTimeout(() => onComplete(), 1000); // nhảy thẳng stage 2
   };
 
-  // Logic chạy chữ tự động
+  // ---> HIỆU ỨNG NÚT DRIFT XUẤT HIỆN TỪ TỪ <---
+  useGSAP(() => {
+    if (step === "drift") {
+      // 1. Giấu division drift đi trước
+      gsap.set(driftRef.current, { opacity: 0, scale: 0.95 });
+
+      // 2. Fade in chậm rãi với độ trễ (delay)
+      gsap.to(driftRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 1.25, // Tăng thời gian fade-in (2.5s) cho lãng mạn
+        ease: "power2.inOut",
+        delay: 0.8, // Đợi Next.js load xongDOM (0.6s) + rèm mờ dần (0.2s)
+      });
+    }
+  }, { scope: containerRef, dependencies: [step] }); // Thêm dep step để hook chạy lại khi chuyển drift
+
+  // Logic chạy chữ whisper giữ nguyên
   useEffect(() => {
     if (step !== "whisper") return;
 
@@ -70,8 +91,7 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
       
       const endTimer = setTimeout(() => {
         setStep("fading-out");
-        // Gọi onComplete(false) để mở phong bì tuần tự
-        setTimeout(() => onComplete(false), 1000);
+        setTimeout(() => onComplete(), 1000);
       }, 4000);
       
       return () => clearTimeout(endTimer);
@@ -80,6 +100,7 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
 
   return (
     <div 
+      ref={containerRef} // ---> GẮN CONTAINERREF
       className={`fixed inset-0 z-[150] flex items-center justify-center font-body text-[#4A4A6A] transition-opacity duration-1000 ${
         step === "fading-out" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
@@ -92,10 +113,10 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
       </div>
 
       {step === "drift" && (
-        <div className="text-center animate-in fade-in zoom-in duration-700">
+        // ---> ĐÃ XÓA TẤT CẢ ANIMATION TAILWIND VÀ GẮN DRIFTREF Ở ĐÂY <---
+        <div ref={driftRef} className="text-center">
           
           <div className="flex justify-center items-center gap-8 mb-6">
-            {/* Nút 1: Mở thư cũ (Play Nhạc) */}
             <div className="flex flex-col items-center gap-3">
               <button
                 onClick={handlePlay}
@@ -108,7 +129,6 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
               <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-80">Mở thư</p>
             </div>
 
-            {/* ---> NÚT 2: SKIP BỎ QUA <--- */}
             <div className="flex flex-col items-center gap-3">
               <button
                 onClick={handleSkip}
@@ -121,11 +141,8 @@ export default function IntroSequence({ onPlayAudio, onComplete }: IntroSequence
 
           </div>
 
-          <p className="font-['Lora'] italic text-lg font-medium tracking-wide opacity-80 mt-4">
-            Đeo tai nghe vào nhé
-          </p>
           <p className="font-['Lora'] italic text-sm font-medium tracking-wide opacity-50 mt-2">
-            (Xem nhiều chán rồi thì bấm Bỏ qua nhảy tới sách luôn nha!)
+            (Bấm Bỏ qua nhảy tới sách luôn nha!)
           </p>
         </div>
       )}

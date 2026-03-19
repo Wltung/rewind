@@ -26,6 +26,10 @@ func SetupRouter(r *gin.Engine) {
 
 	configHandler := handler.NewConfigHandler(db.DB)
 
+	polaroidRepo := repository.NewPolaroidRepository(db.DB)
+	polaroidService := service.NewPolaroidService(polaroidRepo)
+	polaroidHandler := handler.NewPolaroidHandler(polaroidService)
+
 	api := r.Group("/api")
 
 	// Route kiểm tra sức khỏe hệ thống
@@ -64,5 +68,12 @@ func SetupRouter(r *gin.Engine) {
 	{
 		configs.GET("/:key", configHandler.GetConfig)
 		configs.POST("/:key", configHandler.SetConfig)
+	}
+
+	polaroids := api.Group("/polaroids")
+	polaroids.Use(middleware.RequireAuth())
+	{
+		polaroids.GET("/random", polaroidHandler.GetRandomPolaroid)
+		polaroids.POST("/upload", polaroidHandler.UploadPolaroid)
 	}
 }

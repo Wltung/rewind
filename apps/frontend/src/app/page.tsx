@@ -103,10 +103,21 @@ export default function DeskPage() {
       >
         {/* Đồ vật trang trí: Vết cà phê & Bút chì */}
         <div className="absolute top-10 left-[10%] w-48 h-48 coffee-stain opacity-60 pointer-events-none z-0 transform -rotate-12" />
-        <div className="absolute bottom-10 right-[25%] w-64 h-4 bg-yellow-400 rotate-12 shadow-sm rounded-full pointer-events-none z-0 hidden lg:block">
+        {/* Khung bút chì: Chuyển bg-yellow-400 xuống thẻ con, đổi shadow-sm thành drop-shadow-sm để bóng bám theo viền tam giác */}
+        <div className="absolute bottom-10 right-[25%] w-64 h-4 rotate-12 drop-shadow-sm pointer-events-none z-0 hidden lg:block">
+          
+          {/* 1. Phần Gỗ: Nằm tít bên trái (chiếm 8 đơn vị) */}
+          <div className="absolute left-0 top-0 h-full w-8 bg-[#f2d38f]" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
+          
+          {/* 2. Ngòi Đen: Căn giữa phần gỗ */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 w-2 bg-black" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
+          
+          {/* 3. Thân Vàng: Nằm nối tiếp từ phần gỗ (left-8) đến sát cục tẩy (right-4) */}
+          <div className="absolute left-8 right-4 top-0 h-full bg-yellow-400" />
+          
+          {/* 4. Cục Tẩy: Nằm tít bên phải (chiếm 4 đơn vị), bo tròn đuôi */}
           <div className="absolute right-0 top-0 h-full w-4 bg-pink-300 rounded-r-full" />
-          <div className="absolute left-0 top-0 h-full w-8 bg-[#d4c5a3] rounded-l-full" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
-          <div className="absolute left-0 top-0 h-full w-2 bg-black rounded-l-full" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
+          
         </div>
 
         {/* Mặt bàn và các đồ vật chính */}

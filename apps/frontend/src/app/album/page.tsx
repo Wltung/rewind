@@ -6,6 +6,8 @@ import { useGSAP } from "@gsap/react";
 import { memoryService } from "@/services/memory.service";
 import { Memory } from "@/types/memory";
 
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:9001/api").replace('/api', '');
+
 const NOTE_COLORS = ["bg-[#E8F08C]", "bg-[#FFC1CC]", "bg-[#C1E4FF]"];
 const ROTATIONS = ["rotate-2", "-rotate-2", "rotate-3", "-rotate-3", "rotate-1", "-rotate-1"];
 const TAPES = ["bg-yellow-200/50", "bg-blue-200/50", "bg-pink-200/50"];
@@ -81,10 +83,17 @@ export default function AlbumPage() {
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
     const handleWheel = (evt: WheelEvent) => {
-      evt.preventDefault();
-      container.scrollLeft += evt.deltaY;
+      // Chỉ can thiệp (chuyển dọc thành ngang) nếu người dùng đang lăn chuột DỌC
+      if (Math.abs(evt.deltaY) > Math.abs(evt.deltaX)) {
+        evt.preventDefault();
+        container.scrollLeft += evt.deltaY;
+      }
+      // NẾU NGƯỜI DÙNG CUỘN NGANG (Touchpad 2 ngón, Shift + Scroll chuột):
+      // -> Không làm gì cả (Không preventDefault). Để trình duyệt tự cuộn ngang một cách mượt mà theo bản năng của nó!
     };
+
     container.addEventListener("wheel", handleWheel, { passive: false });
     return () => container.removeEventListener("wheel", handleWheel);
   }, [isLoading]);
@@ -122,8 +131,8 @@ export default function AlbumPage() {
         <div className="hidden md:flex flex-col items-end pointer-events-auto">
           <div className="bg-white px-4 py-3 shadow-[2px_2px_0px_rgba(0,0,0,0.1)] rotate-1 border border-gray-100 max-w-xs relative transform-gpu">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 washi-tape bg-[#C1E4FF]/70 opacity-80 rotate-2" />
-            <h1 className="font-stamp text-xl text-ink mb-1">Class 12A5 Memories</h1>
-            <p className="font-hand text-gray-500 text-lg leading-none text-right">~ Since 2021 ~</p>
+            <h1 className="font-stamp text-xl text-ink mb-1">Memories of You</h1>
+            <p className="font-hand text-gray-500 text-lg leading-none text-right">~ Since 2026 ~</p>
           </div>
         </div>
       </header>
@@ -150,7 +159,7 @@ export default function AlbumPage() {
                <div className="font-mono tracking-widest animate-pulse">Đang tìm lại ký ức...</div>
             </div>
           ) : memories.length === 0 ? (
-            <div className="flex w-full justify-center text-ink/50 font-hand text-2xl">Cuốn sổ này vẫn còn trống... Hãy chụp thêm vài bức ảnh nhé!</div>
+            <div className="flex w-full justify-center text-ink/50 font-hand text-2xl">Album này vẫn còn trống... Hãy chụp thêm vài bức ảnh nhé!</div>
           ) : (
             memories.map((mem, index) => {
               const rotateClass = ROTATIONS[index % ROTATIONS.length];
@@ -164,7 +173,13 @@ export default function AlbumPage() {
                       <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-20 md:w-24 h-6 md:h-8 washi-tape ${tapeColor} -rotate-2 z-10`} />
                       
                       <div className="bg-gray-100 overflow-hidden mb-3 md:mb-4 grayscale-[0.2] group-hover:grayscale-0 transition-[filter] duration-700 flex justify-center items-center transform-gpu">
-                        <img src={mem.image_url} alt="Memory" loading="lazy" decoding="async" className="w-auto h-auto max-w-[80vw] md:max-w-[400px] max-h-[50vh] md:max-h-[60vh] object-contain block transform-gpu" />
+                      <img 
+                        src={mem.image_url.startsWith('http') ? mem.image_url : `${BACKEND_URL}${mem.image_url}`} 
+                        alt="Memory" 
+                        loading="lazy" 
+                        decoding="async" 
+                        className="w-auto h-auto max-w-[80vw] md:max-w-[400px] max-h-[50vh] md:max-h-[60vh] object-contain block transform-gpu" 
+                      />
                       </div>
                       
                       <div className="font-hand text-xl md:text-2xl text-ink text-center leading-tight px-2 break-words break-all max-w-[80vw] md:max-w-[400px]">{mem.caption}</div>

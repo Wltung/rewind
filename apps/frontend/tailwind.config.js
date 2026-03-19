@@ -70,9 +70,7 @@ module.exports = {
             },
             fontFamily: {
                 "display": ["Newsreader", "serif"],
-                "hand": ["Caveat",
-                    "Patrick Hand"
-                ], // Chữ viết tay
+                "hand": ['var(--font-handwriting)', 'cursive'],
                 "typewriter": ["Courier Prime", "monospace"],
             },
             borderRadius: {

@@ -21,7 +21,7 @@ export function MiniCassette({ currentTrack, isPlaying, onOpen }: MiniCassettePr
         <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-gray-400 flex items-center justify-center"><div className="w-1 h-[1px] bg-gray-600 rotate-45" /></div>
         
         <div className="w-full bg-primary/10 border-b-2 border-primary/20 mb-2 mt-1 px-2">
-          <h3 className="font-hand font-bold text-xl lg:text-2xl text-ink text-center transform -rotate-1 flex items-center justify-center gap-2 truncate">
+          <h3 className="font-hand font-semibold text-lg lg:text-xl text-ink text-center transform -rotate-1 flex items-center justify-center gap-2 truncate">
             {currentTrack.title} {isPlaying ? <span className="animate-pulse">🎵</span> : <span>🎵</span>}
           </h3>
         </div>
@@ -31,7 +31,7 @@ export function MiniCassette({ currentTrack, isPlaying, onOpen }: MiniCassettePr
           <div className="w-16 h-8 bg-transparent border-t-2 border-b-2 border-transparent" /> 
           <div className={`w-10 h-10 rounded-full border-4 border-white bg-gray-800 ${isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}><div className="w-full h-full border-2 border-dashed border-gray-500 rounded-full" /></div>
         </div>
-        <div className="absolute bottom-1 right-2 text-[10px] font-mono text-gray-500">SIDE A</div>
+        <div className="absolute bottom-1 right-5 text-[10px] font-mono text-gray-500">SIDE A</div>
       </div>
     </button>
   );

@@ -156,7 +156,7 @@ export function CameraUploadModal({ isOpen, onClose, onUploadSuccess }: CameraUp
                 className="w-full min-h-[300px] border-2 border-dashed border-gray-300 bg-gray-50/50 rounded-sm flex flex-col items-center justify-center cursor-pointer hover:bg-white hover:border-gray-400 transition-all"
               >
                 <span className="material-symbols-outlined text-4xl text-gray-400 mb-2">add_a_photo</span>
-                <p className="font-hand text-xl text-gray-500 text-center">Bấm để chọn ảnh<br/><span className="text-sm opacity-70">(Bỏ trống để tạo Note Vàng)</span></p>
+                <p className="font-hand text-xl text-gray-500 text-center">Bấm để chọn ảnh<br/><span className="text-sm opacity-70">(Bỏ trống để tạo Note)</span></p>
               </div>
             )}
           </div>
@@ -165,12 +165,12 @@ export function CameraUploadModal({ isOpen, onClose, onUploadSuccess }: CameraUp
           {/* Cột Phải: Nhập liệu (Giữ nguyên) */}
           <div className="flex-1 flex flex-col justify-between space-y-4">
             <div className="flex flex-col">
-              <label className="font-mono text-xs font-bold text-gray-500 uppercase mb-1">Ngày kỷ niệm</label>
+              <label className="font-mono text-xs font-bold text-gray-500 uppercase mb-1">Ngày lưu</label>
               <input type="date" value={memoryDate} onChange={(e) => setMemoryDate(e.target.value)} className="w-full bg-transparent border-b-2 border-gray-300 focus:border-ink outline-none py-1 font-mono" />
             </div>
 
             <div className="flex flex-col">
-              <label className="font-mono text-xs font-bold text-gray-500 uppercase mb-1">Mặt trước (Caption)</label>
+              <label className="font-mono text-xs font-bold text-gray-500 uppercase mb-1">Caption</label>
               <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Vài dòng ngắn gọn..." className="w-full h-20 bg-transparent border-2 border-gray-200 rounded p-2 focus:border-ink outline-none resize-none font-hand text-xl" />
             </div>
 
@@ -180,14 +180,14 @@ export function CameraUploadModal({ isOpen, onClose, onUploadSuccess }: CameraUp
                   <span className="material-symbols-outlined text-[14px]">lock_open</span> Mặt sau (Bí mật)
                 </label>
                 <textarea 
-                  value={secretMessage} onChange={(e) => setSecretMessage(e.target.value)} placeholder="Tâm sự mỏng chỉ hiện khi lật ảnh..." 
+                  value={secretMessage} onChange={(e) => setSecretMessage(e.target.value)} placeholder="Tâm sự chỉ hiện khi lật ảnh..." 
                   className="w-full h-28 bg-[#FFF9E6] border-2 border-yellow-200 rounded p-2 focus:border-yellow-400 outline-none resize-none font-hand text-xl shadow-inner"
                 />
               </div>
             )}
 
             <button onClick={handleUpload} disabled={isUploading} className={`w-full py-3 text-white font-mono font-bold tracking-widest text-sm uppercase rounded shadow-md transition-all ${isUploading ? 'bg-gray-400' : 'bg-ink hover:translate-y-[-2px] hover:shadow-lg'}`}>
-              {isUploading ? 'Đang rửa ảnh...' : 'Lưu Kỷ Niệm'}
+              {isUploading ? 'Đang rửa ảnh...' : 'Lưu'}
             </button>
           </div>
 

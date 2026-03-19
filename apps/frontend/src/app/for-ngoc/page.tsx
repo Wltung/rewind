@@ -85,27 +85,33 @@ export default function Home() {
 
   // ---> HÀM GSAP KÉO RÈM TÍM VÀ QUAY VỀ DESK <---
   const handleReturnToDesk = () => {
-    // 1. Tạo rèm che màu Tím Nhạt (cùng màu với IntroSequence)
+    // 1. Tạo màn che màu Tím Nhạt (Khớp với màu của Desk)
     const exitOverlay = document.createElement("div");
     exitOverlay.className = "fixed inset-0 bg-[#E6E6FA] z-[9999] opacity-0 pointer-events-none";
     document.body.appendChild(exitOverlay);
 
-    // 2. Kéo rèm lên làm mờ cuốn sách
+    // 2. Kéo rèm kín màn hình
     gsap.to(exitOverlay, {
       opacity: 1,
-      duration: 0.6,
+      duration: 0.4,
       ease: "power2.inOut",
       onComplete: () => {
-        // Tắt nhạc nền trước khi đi để không bị vọng âm sang trang Desk
+        // Tắt nhạc nền của trang sách (nếu audioRef của bạn tên khác thì đổi lại nhé)
         if (audioRef.current) {
           audioRef.current.pause();
         }
-        
-        // 3. Đẩy về trang chủ kèm cờ "envelope" để Desk giăng sẵn rèm tím đón đầu
+
+        // 3. Đẩy về Desk kèm cờ "envelope"
         router.push("/?from=envelope");
         
-        // 4. Dọn rác DOM
-        setTimeout(() => exitOverlay.remove(), 1000);
+        // 4. Mờ dần màn che để lộ Desk
+        gsap.to(exitOverlay, { 
+          opacity: 0, 
+          duration: 0.6, 
+          delay: 0.2, 
+          ease: "power2.inOut", 
+          onComplete: () => exitOverlay.remove() 
+        });
       }
     });
   };
@@ -119,17 +125,15 @@ export default function Home() {
       <div className="absolute inset-0 noise-overlay pointer-events-none z-0"></div>
 
       {/* ---> NÚT BACK TO DESK (Chỉ hiện khi đã vào tới sách để không phá vỡ Intro) <--- */}
-      {stage >= 2 && (
-        <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[9999]">
-          <button 
-            onClick={handleReturnToDesk}
-            className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7]/90 backdrop-blur-sm px-3 md:px-4 py-2 shadow-[2px_2px_0px_rgba(0,0,0,0.15)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-[#d4c5a3]"
-          >
-            <span className="material-symbols-outlined text-lg md:text-xl text-[#4a3a22]">arrow_back</span>
-            <span className="font-display font-bold text-xs md:text-sm tracking-wide text-[#4a3a22]">BACK TO DESK</span>
-          </button>
-        </div>
-      )}
+      <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[9999]">
+        <button 
+          onClick={handleReturnToDesk} // ---> Gắn hàm vào đây
+          className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7]/90 backdrop-blur-sm px-3 md:px-4 py-2 shadow-[2px_2px_0px_rgba(0,0,0,0.15)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-[#d4c5a3]"
+        >
+          <span className="material-symbols-outlined text-lg md:text-xl text-[#4a3a22]">arrow_back</span>
+          <span className="font-display font-bold text-xs md:text-sm tracking-wide text-[#4a3a22]">BACK TO DESK</span>
+        </button>
+      </div>
 
       {stage === 0 && (
         <IntroSequence

@@ -58,7 +58,7 @@ export function Camera() {
           <div 
             onClick={handleOpenUpload}
             className="w-5 h-5 bg-[#FF5A5A] text-white rounded-full flex items-center justify-center hover:scale-125 transition-transform shadow-sm cursor-pointer border border-red-800/20"
-            title="Rửa ảnh mới (Admin)"
+            title="Thêm ảnh mới"
           >
             <span className="material-symbols-outlined text-[14px] font-bold">add</span>
           </div>

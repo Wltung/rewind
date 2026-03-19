@@ -26,7 +26,7 @@
     --color-leather-base: #5c3a21;
     --color-leather-dark: #3a2210;
     --font-typewriter: 'Courier Prime', monospace;
-    --font-hand: 'Dancing Script', cursive;
+    --font-hand: 'Caveat', 'Dancing Script', cursive;
     --font-serif: 'Playfair Display', serif;
 }
 
@@ -436,7 +436,7 @@
 }
 
 .elegant-text {
-    font-family: 'Dancing Script', cursive;
+    font-family: 'Caveat', 'Dancing Script', cursive;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     opacity: 0;
     animation: fade-in-text 2s forwards 1s ease-out;
@@ -576,7 +576,7 @@
 /* ======================================================== */
 
 .friendly-text {
-    font-family: 'Dancing_Script', cursive;
+    font-family: 'Caveat', 'Dancing_Script', cursive;
     /* hoặc Mali nếu bạn đã import */
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
     opacity: 0;
@@ -693,7 +693,7 @@
 /* ======================================================== */
 
 .bold-charcoal-text {
-    font-family: 'Dancing_Script', cursive;
+    font-family: 'Caveat', 'Dancing_Script', cursive;
     color: #333333;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     opacity: 0;

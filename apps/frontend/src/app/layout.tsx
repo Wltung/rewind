@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Analytics } from "@vercel/analytics/react";
+import { Geist, Geist_Mono, Kalam } from 'next/font/google';
 import './globals.css';
+import ProtectedAnalytics from '@/components/auth/ProtectedAnalytics';
+
+// Khai báo duy nhất 1 font viết tay chuẩn tiếng Việt
+const kalam = Kalam({
+  weight: ['400', '700'], // Kalam cần khai báo weight
+  subsets: ['latin'], // "Lá bùa" chống lỗi dấu
+  variable: '--font-handwriting', // Đặt tên biến chung chung cho dễ đổi sau này
+  display: 'swap',
+});
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,6 +24,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Rewind',
   description: 'Một chút năng lượng nhỏ...',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -27,15 +44,11 @@ export default function RootLayout({
     <html lang="vi">
       <head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Special+Elite&display=swap"
-          rel="stylesheet"
-        />
-        <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
         />
       </head>
-      <body className="antialiased">
+      <body className={`antialiased ${kalam.variable}`}>
         {children}
         {/* ============================================================== */}
         {/* GLOBAL ROTATE WARNING - CẢNH BÁO XOAY MÀN HÌNH TOÀN CỤC */}
@@ -58,7 +71,7 @@ export default function RootLayout({
           </div>
         </div>
         {/* ============================================================== */}
-        <Analytics />
+        <ProtectedAnalytics />
       </body>
     </html>
   );
