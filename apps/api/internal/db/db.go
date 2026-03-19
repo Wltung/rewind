@@ -13,7 +13,7 @@ var DB *gorm.DB
 
 func Connect() {
 	// Tạo chuỗi DSN (Data Source Name)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true&tls=true",
 		config.Cfg.DBUser,
 		config.Cfg.DBPassword,
 		config.Cfg.DBHost,
