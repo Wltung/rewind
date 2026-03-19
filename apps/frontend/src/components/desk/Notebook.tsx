@@ -46,7 +46,7 @@ export function Notebook() {
   }, []);
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] sm:w-[70%] md:w-[50%] max-w-2xl bg-[#FDFBF7] shadow-paper rounded-sm p-5 md:p-12 rotate-1 z-10">
+    <div className="relative md:absolute md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full max-w-2xl bg-[#FDFBF7] shadow-paper rounded-sm p-8 md:p-12 rotate-1 z-10">
       <div className="absolute left-4 top-0 bottom-0 w-[2px] bg-red-200/50" />
       <div className="relative flex flex-col gap-6 font-hand text-ink">
         <div className="flex justify-between items-start border-b border-primary/20 pb-2">

@@ -121,7 +121,7 @@ export default function DeskPage() {
         </div>
 
         {/* Mặt bàn và các đồ vật chính */}
-        <div className="relative w-[95vw] max-w-[2000px] h-[95vh] flex flex-col md:block mx-auto">
+        <div className="relative w-[95vw] max-w-[2000px] h-[95vh] min-h-[800px] flex flex-col md:block mx-auto">
           <Notebook />
           <Cassette />
           <Camera />

@@ -125,7 +125,7 @@ export function PolaroidGacha() {
 
       {/* ICON MÁY ẢNH TRÊN BÀN */}
       {/* BỎ HIDDEN ĐỂ HIỆN TRÊN MOBILE, DÙNG % ĐỂ ĐỊNH VỊ */}
-      <div onClick={() => setIsGachaOpen(true)} className="absolute top-[8%] left-[3%] md:top-[15%] md:left-[15%] w-20 h-24 sm:w-28 sm:h-32 md:w-32 md:h-36 z-20 cursor-pointer group">
+      <div onClick={() => setIsGachaOpen(true)} className="absolute top-16 left-8 md:top-24 md:left-32 w-28 h-32 md:w-32 md:h-36 z-20 cursor-pointer hidden lg:block group">
         <div className="absolute inset-0 bg-white p-2 shadow-md transform -rotate-12 border border-gray-200">
           <div className="w-full h-[75%] bg-gray-200 opacity-50" />
         </div>

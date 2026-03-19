@@ -36,8 +36,8 @@ export function Camera() {
   return (
     <>
       <button 
-        onClick={handleOpenAlbum} 
-        className="hover-lift absolute top-[8%] right-[3%] md:top-[12%] md:right-[15%] z-30 w-28 sm:w-36 md:w-48 aspect-[1.2] bg-[#f0f0f0] rounded-xl shadow-lg flex flex-col items-center p-2 md:p-4 transform rotate-6 border-b-4 border-gray-300 cursor-pointer group" 
+        onClick={handleOpenAlbum} // ---> ĐỔI SỰ KIỆN TẠI ĐÂY
+        className="hover-lift absolute md:top-16 md:right-24 top-12 right-12 z-30 w-48 h-40 bg-[#f0f0f0] rounded-xl shadow-lg flex flex-col items-center p-4 transform rotate-6 border-b-4 border-gray-300 cursor-pointer group"
         style={{ '--hover-rotate': '8deg' } as React.CSSProperties}
       >
         <div className="w-full h-8 bg-gray-800 rounded-t-lg flex items-center justify-between px-3 mb-2">

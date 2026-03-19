@@ -192,9 +192,9 @@ export function Cassette() {
 
       {deskNote && (
         <div 
-        onClick={() => setIsUploadOpen(true)}
-        className="hover-lift absolute bottom-[5%] left-[2%] md:bottom-[15%] md:left-[25%] z-10 w-24 sm:w-28 md:w-36 aspect-square bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] transform rotate-3 flex flex-col items-center justify-center p-2 text-center cursor-pointer border border-yellow-200/50"
-        style={{ '--hover-rotate': '6deg' } as React.CSSProperties}
+          onClick={() => setIsUploadOpen(true)}
+          className="hover-lift absolute bottom-4 left-[280px] lg:bottom-12 lg:left-[360px] xl:bottom-20 xl:left-[420px] z-10 w-32 lg:w-36 h-32 lg:h-36 bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] transform rotate-3 flex flex-col items-center justify-center p-3 text-center cursor-pointer border border-yellow-200/50"
+          style={{ '--hover-rotate': '6deg' } as React.CSSProperties}
         >
           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-700 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.4)] border border-red-900/50 flex items-center justify-center">
             <div className="w-1 h-1 bg-white/60 rounded-full translate-x-[-1px] translate-y-[-1px]"></div>
