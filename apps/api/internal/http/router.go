@@ -15,7 +15,7 @@ func SetupRouter(r *gin.Engine) {
 	// --- CẤU HÌNH CORS NÀY VÀO ĐẦU ---
 	configCORS := cors.DefaultConfig()
 
-	configCORS.AllowOrigins = []string{"http://localhost:3000", "https://rewind-api-2muu.onrender.com"}
+	configCORS.AllowOrigins = []string{"http://localhost:3000", "rewind-frontend-jet.vercel.app"}
 	configCORS.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	configCORS.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "Cookie"}
 	configCORS.AllowCredentials = true // Cực kỳ quan trọng để trình duyệt chịu gửi/nhận Cookie
