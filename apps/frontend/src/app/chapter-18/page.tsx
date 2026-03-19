@@ -53,7 +53,7 @@ export default function EighteenthChapter() {
               <div className="absolute inset-0 z-0 scale-[1.5] pointer-events-none opacity-90">
                 <Lottie
                     lottieRef={confettiRef}
-                    animationData={require('../../public/Confetti.json')} 
+                    animationData={require('@/assets/Confetti.json')} 
                     loop={true} 
                     autoplay={true}
                     onDOMLoaded={() => confettiRef.current?.setSpeed(0.5)} 
@@ -64,7 +64,7 @@ export default function EighteenthChapter() {
               <div className="relative z-10 w-[250px] h-[250px]">
                   <Lottie
                       lottieRef={flowerRef}
-                      animationData={require('../../public/flower_animation.json')} 
+                      animationData={require('@/assets/flower_animation.json')} 
                       loop={true} 
                       autoplay={true} 
                       initialSegment={[0, 61]}
