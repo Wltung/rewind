@@ -1,16 +1,14 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
-	"time"
 
 	"rewind/api/internal/model"
 	"rewind/api/internal/service"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,29 +36,41 @@ func (h *PolaroidHandler) GetRandomPolaroid(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": polaroid})
 }
 
+// Upload ảnh trực tiếp lên Cloudinary
 func (h *PolaroidHandler) UploadPolaroid(c *gin.Context) {
 	caption := c.PostForm("caption")
 	secretMsg := c.PostForm("secret_message")
 
-	file, err := c.FormFile("image")
+	fileHeader, err := c.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Thiếu file ảnh"})
 		return
 	}
 
-	uploadDir := "./uploads/images"
-	os.MkdirAll(uploadDir, os.ModePerm)
+	// Mở file ra chuẩn bị đẩy lên mây
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể đọc file ảnh"})
+		return
+	}
+	defer file.Close()
 
-	filename := fmt.Sprintf("%d_polaroid_%s", time.Now().Unix(), filepath.Base(file.Filename))
-	dst := filepath.Join(uploadDir, filename)
+	cld, err := cloudinary.New()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi cấu hình Cloudinary"})
+		return
+	}
 
-	if err := c.SaveUploadedFile(file, dst); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi lưu file ảnh"})
+	uploadResult, err := cld.Upload.Upload(c.Request.Context(), file, uploader.UploadParams{
+		Folder: "rewind_project/polaroids",
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi upload ảnh lên mây"})
 		return
 	}
 
 	polaroid := model.Polaroid{
-		ImageURL:      "/images/" + filename,
+		ImageURL:      uploadResult.SecureURL, // Lấy link HTTPS
 		Caption:       caption,
 		SecretMessage: secretMsg,
 	}

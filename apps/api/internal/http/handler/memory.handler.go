@@ -1,15 +1,14 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"rewind/api/internal/model"
 	"rewind/api/internal/service"
 	"strconv"
 	"time"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,7 +35,6 @@ func (h *MemoryHandler) GetAllMemories(c *gin.Context) {
 }
 
 func (h *MemoryHandler) GetRandomMemory(c *gin.Context) {
-	// Lấy ID cần loại trừ từ URL
 	excludeIDStr := c.Query("exclude_id")
 	var excludeID int64
 	if excludeIDStr != "" {
@@ -54,20 +52,19 @@ func (h *MemoryHandler) GetRandomMemory(c *gin.Context) {
 	})
 }
 
-// API Xử lý Upload Ảnh Polaroid hoặc Tờ Note Vàng
+// API Xử lý Upload Ảnh Polaroid hoặc Tờ Note Vàng lên Cloudinary
 func (h *MemoryHandler) UploadMemory(c *gin.Context) {
 	caption := c.PostForm("caption")
-	secretMessage := c.PostForm("secret_message") // Lấy câu bí mật mặt sau
-	memoryDateStr := c.PostForm("memory_date")    // VD: 2026-03-08
+	secretMessage := c.PostForm("secret_message")
+	memoryDateStr := c.PostForm("memory_date")
 
-	// Parse ngày tháng
 	var memoryDate time.Time
 	if memoryDateStr != "" {
 		parsedDate, err := time.Parse("2006-01-02", memoryDateStr)
 		if err == nil {
 			memoryDate = parsedDate
 		} else {
-			memoryDate = time.Now() // Nếu lỗi format thì lấy ngày hiện tại
+			memoryDate = time.Now()
 		}
 	} else {
 		memoryDate = time.Now()
@@ -76,25 +73,33 @@ func (h *MemoryHandler) UploadMemory(c *gin.Context) {
 	var imageURL string
 
 	// Thử lấy file ảnh từ Request
-	file, err := c.FormFile("image_file")
-	if err == nil && file != nil {
-		// TẠO POLAROID: Lưu file ảnh vào ổ cứng
-		uploadDir := "./uploads/images"
-		if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể tạo thư mục lưu ảnh"})
+	fileHeader, err := c.FormFile("image_file")
+	if err == nil && fileHeader != nil {
+		// --- CÓ FILE ẢNH: ĐẨY LÊN CLOUDINARY ---
+		file, err := fileHeader.Open()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể đọc file ảnh"})
+			return
+		}
+		defer file.Close()
+
+		cld, err := cloudinary.New()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi cấu hình Cloudinary"})
 			return
 		}
 
-		filename := fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(file.Filename))
-		dst := filepath.Join(uploadDir, filename)
-
-		if err := c.SaveUploadedFile(file, dst); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi lưu file ảnh"})
+		uploadResult, err := cld.Upload.Upload(c.Request.Context(), file, uploader.UploadParams{
+			Folder: "rewind_project/memories", // Đổi tên thư mục tùy thích
+		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi upload ảnh lên mây"})
 			return
 		}
-		imageURL = "/images/" + filename
+
+		imageURL = uploadResult.SecureURL // Lấy link HTTPS từ Cloudinary
 	} else {
-		// TẠO TỜ NOTE VÀNG: Nếu không up ảnh, imageURL rỗng
+		// --- TẠO TỜ NOTE VÀNG (Không có ảnh) ---
 		imageURL = ""
 		if caption == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Đã không có ảnh thì phải viết vài chữ (caption) chứ!"})
@@ -110,7 +115,6 @@ func (h *MemoryHandler) UploadMemory(c *gin.Context) {
 		MemoryDate:    memoryDate,
 	}
 
-	// Gọi service lưu vào DB
 	if err := h.service.CreateMemory(&memory); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi lưu kỷ niệm vào Database"})
 		return
