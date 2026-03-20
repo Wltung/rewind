@@ -1,5 +1,5 @@
 // apps/frontend/lib/http.ts
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:9001/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080/api";
 
 export const http = {
   async get<T>(endpoint: string): Promise<T> {

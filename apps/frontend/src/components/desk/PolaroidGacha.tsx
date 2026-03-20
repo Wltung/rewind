@@ -210,7 +210,7 @@ export function PolaroidGacha() {
                   ) : (
                     <div className="relative bg-[#1A1A1A] border border-gray-300 shadow-inner p-[2px]">
                       <img 
-                        src={currentMemory.image_url.startsWith('http') ? currentMemory.image_url : `${BACKEND_URL}${currentMemory.image_url}`} 
+                        src={currentMemory.image_url} 
                         alt="Memory" 
                         onError={() => setImageError(true)}
                         className="w-auto h-auto max-w-[85vw] md:max-w-[400px] max-h-[50vh] object-contain block grayscale-[0.1] animate-in fade-in zoom-in-95 duration-1000" 

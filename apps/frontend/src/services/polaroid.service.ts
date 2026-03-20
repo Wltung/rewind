@@ -1,12 +1,23 @@
 import { http } from "@/lib/http";
 import { Polaroid } from "@/types/polaroid";
 
+const ASSET_DOMAIN = "https://rewind-api-2muu.onrender.com";
+
+const getFullUrl = (url?: string) => {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  const cleanPath = url.startsWith("/") ? url : `/${url}`;
+  return `${ASSET_DOMAIN}${cleanPath}`;
+};
+
 export const polaroidService = {
-  // Lấy ảnh ngẫu nhiên (Có hỗ trợ excludeId để không bốc trùng)
+  // Lấy ảnh ngẫu nhiên
   async getRandomPolaroid(excludeId?: number): Promise<Polaroid> {
     const query = excludeId ? `?excludeId=${excludeId}` : "";
     const res = await http.get<{ data: Polaroid }>(`/polaroids/random${query}`);
-    return res.data;
+    const p = res.data;
+    if (p) p.image_url = getFullUrl(p.image_url);
+    return p;
   },
 
   // (Admin) Upload ảnh mới lên kho Gacha
@@ -17,6 +28,8 @@ export const polaroidService = {
     formData.append("secret_message", data.secret_message);
 
     const res = await http.post<{ data: Polaroid }>("/polaroids/upload", formData);
-    return res.data;
+    const p = res.data;
+    if (p) p.image_url = getFullUrl(p.image_url);
+    return p;
   }
 };

@@ -6,7 +6,16 @@ import { useGSAP } from "@gsap/react";
 import { memoryService } from "@/services/memory.service";
 import { Memory } from "@/types/memory";
 
-const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:9001/api").replace('/api', '');
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080/api").replace('/api', '');
+
+// ---> THÊM HÀM XỬ LÝ LINK NÀY <--
+const getImageUrl = (url: string) => {
+  if (!url) return "";
+  if (url.startsWith('http')) return url;
+  // Đảm bảo luôn có 1 dấu "/" ở đầu tên file (VD: "/uploads/anh.jpg")
+  const cleanPath = url.startsWith('/') ? url : `/${url}`;
+  return `${BACKEND_URL}${cleanPath}`;
+};
 
 const NOTE_COLORS = ["bg-[#E8F08C]", "bg-[#FFC1CC]", "bg-[#C1E4FF]"];
 const ROTATIONS = ["rotate-2", "-rotate-2", "rotate-3", "-rotate-3", "rotate-1", "-rotate-1"];
@@ -174,7 +183,7 @@ export default function AlbumPage() {
                       
                       <div className="bg-gray-100 overflow-hidden mb-3 md:mb-4 grayscale-[0.2] group-hover:grayscale-0 transition-[filter] duration-700 flex justify-center items-center transform-gpu">
                       <img 
-                        src={mem.image_url.startsWith('http') ? mem.image_url : `${BACKEND_URL}${mem.image_url}`} 
+                        src={mem.image_url}
                         alt="Memory" 
                         loading="lazy" 
                         decoding="async" 
