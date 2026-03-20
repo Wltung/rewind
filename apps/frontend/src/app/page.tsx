@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -15,6 +15,9 @@ export default function DeskPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const deskRef = useRef<HTMLDivElement>(null);
+
+  // --- THÊM STATE ĐỂ LƯU TỶ LỆ ZOOM ---
+  const [deskScale, setDeskScale] = useState(1);
 
   useGSAP(() => {
     // Đọc tham số trên thanh URL (ví dụ: /?from=album)
@@ -87,6 +90,30 @@ export default function DeskPage() {
     }
   }, { scope: containerRef });
 
+  useEffect(() => {
+    const handleResize = () => {
+      // Kích thước chuẩn của mặt bàn (chuẩn Laptop)
+      const baseW = 1280; 
+      const baseH = 800;
+      
+      // Kích thước thực tế của màn hình (điện thoại/PC)
+      const screenW = window.innerWidth;
+      const screenH = window.innerHeight;
+
+      // Tính tỷ lệ zoom để nhét vừa bàn vào màn hình (nhân 0.98 để chừa 2% viền cho đẹp)
+      const scaleW = screenW / baseW;
+      const scaleH = screenH / baseH;
+      const scale = Math.min(scaleW, scaleH) * 0.98;
+
+      // Đảm bảo không bao giờ zoom to hơn kích thước thật trên màn siêu to
+      setDeskScale(Math.min(scale, 1));
+    };
+
+    handleResize(); // Chạy ngay khi load trang
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <main ref={containerRef} className="relative min-h-screen w-full wood-texture flex items-center justify-center overflow-hidden p-4 font-display text-ink selection:bg-primary/20">
       
@@ -101,35 +128,41 @@ export default function DeskPage() {
         ref={deskRef}
         className="absolute inset-0 w-full h-full flex items-center justify-center opacity-0 scale-[0.5] origin-center"
       >
-        {/* Đồ vật trang trí: Vết cà phê & Bút chì */}
-        <div className="absolute top-10 left-[10%] w-48 h-48 coffee-stain opacity-60 pointer-events-none z-0 transform -rotate-12" />
-        {/* Khung bút chì: Chuyển bg-yellow-400 xuống thẻ con, đổi shadow-sm thành drop-shadow-sm để bóng bám theo viền tam giác */}
-        <div className="absolute bottom-10 right-[25%] w-64 h-4 rotate-12 drop-shadow-sm pointer-events-none z-0 hidden lg:block">
-          
-          {/* 1. Phần Gỗ: Nằm tít bên trái (chiếm 8 đơn vị) */}
-          <div className="absolute left-0 top-0 h-full w-8 bg-[#f2d38f]" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
-          
-          {/* 2. Ngòi Đen: Căn giữa phần gỗ */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 w-2 bg-black" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
-          
-          {/* 3. Thân Vàng: Nằm nối tiếp từ phần gỗ (left-8) đến sát cục tẩy (right-4) */}
-          <div className="absolute left-8 right-4 top-0 h-full bg-yellow-400" />
-          
-          {/* 4. Cục Tẩy: Nằm tít bên phải (chiếm 4 đơn vị), bo tròn đuôi */}
-          <div className="absolute right-0 top-0 h-full w-4 bg-pink-300 rounded-r-full" />
-          
-        </div>
+         {/* ============================================================ */}
+        {/* LỚP WRAPPER: TỰ ĐỘNG ZOOM TOÀN BỘ THEO MÀN HÌNH */}
+        {/* ============================================================ */}
+        <div className="origin-center" style={{ transform: `scale(${deskScale})` }}>
+          {/* Đồ vật trang trí: Vết cà phê & Bút chì */}
+          <div className="absolute top-10 left-[10%] w-48 h-48 coffee-stain opacity-60 pointer-events-none z-0 transform -rotate-12" />
+          {/* Khung bút chì: Chuyển bg-yellow-400 xuống thẻ con, đổi shadow-sm thành drop-shadow-sm để bóng bám theo viền tam giác */}
+          <div className="absolute bottom-10 right-[25%] w-64 h-4 rotate-12 drop-shadow-sm pointer-events-none z-0">
+            
+            {/* 1. Phần Gỗ: Nằm tít bên trái (chiếm 8 đơn vị) */}
+            <div className="absolute left-0 top-0 h-full w-8 bg-[#f2d38f]" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
+            
+            {/* 2. Ngòi Đen: Căn giữa phần gỗ */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 w-2 bg-black" style={{ clipPath: "polygon(0 50%, 100% 0, 100% 100%)" }} />
+            
+            {/* 3. Thân Vàng: Nằm nối tiếp từ phần gỗ (left-8) đến sát cục tẩy (right-4) */}
+            <div className="absolute left-8 right-4 top-0 h-full bg-yellow-400" />
+            
+            {/* 4. Cục Tẩy: Nằm tít bên phải (chiếm 4 đơn vị), bo tròn đuôi */}
+            <div className="absolute right-0 top-0 h-full w-4 bg-pink-300 rounded-r-full" />
+            
+          </div>
 
-        {/* Mặt bàn và các đồ vật chính */}
-        <div className="relative w-[95vw] max-w-[2000px] h-[95vh] min-h-[800px] flex flex-col md:block mx-auto">
-          <Notebook />
-          <Cassette />
-          <Camera />
-          <Envelope />
-          <PolaroidGacha />
+          {/* Mặt bàn và các đồ vật chính */}
+          <div className="relative w-[1280px] h-[800px] mx-auto">
+            <Notebook />
+            <Cassette />
+            <Camera />
+            <Envelope />
+            <PolaroidGacha />
 
-          {/* Băng dính decor mặt bàn */}
-          <div className="absolute top-[12%] left-[45%] w-24 h-[26px] transform -rotate-45 z-20 bg-[#DFD7C0]/60 backdrop-blur-[2px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border-x-[4px] border-dashed border-x-white/40 bg-clip-padding" />
+            {/* Băng dính decor mặt bàn */}
+            <div className="absolute top-[12%] left-[45%] w-24 h-[26px] transform -rotate-45 z-20 bg-[#DFD7C0]/60 backdrop-blur-[2px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] border-x-[4px] border-dashed border-x-white/40 bg-clip-padding" />
+          </div>
+
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import { Song } from "@/types/song";
 import { songService } from "@/services/song.service";
 import { DeskNote } from "@/types/config";
 import { configService } from "@/services/config.service";
+import { createPortal } from "react-dom";
 
 export function Cassette() {
   const [playlist, setPlaylist] = useState<Song[]>([]);
@@ -193,7 +194,7 @@ export function Cassette() {
       {deskNote && (
         <div 
           onClick={() => setIsUploadOpen(true)}
-          className="hover-lift absolute bottom-4 left-[280px] lg:bottom-12 lg:left-[360px] xl:bottom-20 xl:left-[420px] z-10 w-32 lg:w-36 h-32 lg:h-36 bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] transform rotate-3 flex flex-col items-center justify-center p-3 text-center cursor-pointer border border-yellow-200/50"
+          className="hover-lift absolute bottom-10 left-[300px] lg:bottom-12 lg:left-[360px] xl:bottom-20 xl:left-[420px] z-10 w-32 lg:w-36 h-32 lg:h-36 bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] transform rotate-3 flex flex-col items-center justify-center p-3 text-center cursor-pointer border border-yellow-200/50"
           style={{ '--hover-rotate': '6deg' } as React.CSSProperties}
         >
           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-700 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.4)] border border-red-900/50 flex items-center justify-center">
@@ -205,38 +206,49 @@ export function Cassette() {
         </div>
       )}
 
-      {isOpen && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-8 overflow-hidden">
-          <div className="absolute inset-0 bg-[#4a463e]/80 backdrop-blur-md cursor-pointer transition-opacity duration-1000" onClick={() => setIsOpen(false)} />
+      {isOpen && typeof window !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[99999] w-screen h-screen">
+          
+          {/* 1. NỀN ĐEN CỐ ĐỊNH (Không bao giờ bị cuộn theo) */}
+          <div className="absolute inset-0 bg-[#4a463e]/90 backdrop-blur-md cursor-pointer transition-opacity duration-1000" onClick={() => setIsOpen(false)} />
 
-          <div className="relative z-10 w-full max-w-6xl flex flex-col animate-modal-in">
-            <div className="w-full flex justify-between items-center mb-6 text-white px-4 md:px-0">
-              <div className="flex items-center gap-4">
-                <h2 className="text-3xl md:text-4xl font-hand font-bold tracking-wide">The Mixtape</h2>
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/40 rounded-full border border-white/10">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-white/80 uppercase mt-0.5">LIVE FROM DESK</span>
+          {/* 2. VÙNG CUỘN (Cho phép cuộn trên Mobile nếu nội dung quá dài) */}
+          <div className="relative z-10 w-full h-full overflow-y-auto overflow-x-hidden flex flex-col items-center p-4 md:p-8">
+            
+            {/* 3. NỘI DUNG CHÍNH (my-auto là chìa khóa: Desktop căn giữa, Mobile đẩy lên top) */}
+            <div className="w-full max-w-6xl my-auto flex flex-col animate-modal-in py-10">
+              
+              {/* Header */}
+              <div className="w-full flex justify-between items-center mb-8 text-white px-2 md:px-0">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-3xl md:text-4xl font-hand font-bold tracking-wide">The Mixtape</h2>
+                  <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-black/40 rounded-full border border-white/10">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                    <span className="text-[10px] font-mono font-bold tracking-widest text-white/80 uppercase mt-0.5">LIVE FROM DESK</span>
+                  </div>
                 </div>
+                <button onClick={() => setIsOpen(false)} className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-all text-sm font-bold tracking-wider uppercase border border-white/20">
+                  <span className="hidden sm:inline">Close</span>
+                  <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">close</span>
+                </button>
               </div>
-              <button onClick={() => setIsOpen(false)} className="group flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-all text-sm font-bold tracking-wider uppercase border border-white/20">
-                <span className="hidden sm:inline">Close</span>
-                <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">close</span>
-              </button>
-            </div>
 
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 items-center lg:items-start justify-center relative">
-              <TapePlayer 
-                currentTrack={currentTrack} isPlaying={isPlaying} progress={progress}
-                currentTime={currentTime} audioRef={audioRef} onToggleMusic={toggleMusic}
-                onNext={handleNext} onPrev={handlePrev} onRewind={handleRewind}
-                onOpenUpload={() => setIsUploadOpen(true)}
-                onEject={() => setIsTrayOpen(true)} // ---> TRUYỀN HÀM MỞ KHAY <---
-                nextTrack1={nextTrack1} nextTrack2={nextTrack2}
-              />
-              <LyricsSheet 
-                currentTrack={currentTrack} currentTime={currentTime} audioRef={audioRef}
-                isPlaying={isPlaying} onToggleMusic={toggleMusic}
-              />
+              {/* Flex-col trên Mobile, Flex-row trên Desktop */}
+              <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 items-center lg:items-start justify-center relative">
+                <TapePlayer 
+                  currentTrack={currentTrack} isPlaying={isPlaying} progress={progress}
+                  currentTime={currentTime} audioRef={audioRef} onToggleMusic={toggleMusic}
+                  onNext={handleNext} onPrev={handlePrev} onRewind={handleRewind}
+                  onOpenUpload={() => setIsUploadOpen(true)}
+                  onEject={() => setIsTrayOpen(true)}
+                  nextTrack1={nextTrack1} nextTrack2={nextTrack2}
+                />
+                <LyricsSheet 
+                  currentTrack={currentTrack} currentTime={currentTime} audioRef={audioRef}
+                  isPlaying={isPlaying} onToggleMusic={toggleMusic}
+                />
+              </div>
+
             </div>
           </div>
 
@@ -245,17 +257,13 @@ export function Cassette() {
           {/* ========================================================= */}
           {isTrayOpen && (
             <div className="absolute inset-0 z-[400] flex items-end justify-center pointer-events-none overflow-hidden">
-              {/* Lớp nền đen che mờ máy cassette bên dưới */}
               <div 
                 className={`absolute inset-0 bg-black/50 backdrop-blur-sm pointer-events-auto ${isTrayClosing ? 'animate-fade-out' : 'animate-fade-in'}`} 
-                onClick={handleCloseTray} // Dùng hàm đóng mượt
+                onClick={handleCloseTray} 
               />
-              
-              {/* Hộc khay băng trượt lên */}
               <div className={`relative w-full max-w-4xl h-[75vh] md:h-[65vh] bg-[#2C2822] rounded-t-2xl shadow-[0_-20px_50px_rgba(0,0,0,0.8)] flex flex-col border-t-8 border-[#1A1713] pointer-events-auto ${isTrayClosing ? 'animate-slide-down' : 'animate-slide-up'}`}>
-                
-                {/* Header khay & Ô Search */}
-                <div className="flex flex-col md:flex-row items-center justify-between p-4 md:p-6 border-b border-white/10 bg-[#24201B] rounded-t-xl gap-4">
+                {/* ... Toàn bộ nội dung Header Khay và Danh sách băng của bạn giữ nguyên ... */}
+                 <div className="flex flex-col md:flex-row items-center justify-between p-4 md:p-6 border-b border-white/10 bg-[#24201B] rounded-t-xl gap-4">
                   <h3 className="font-hand text-2xl md:text-3xl text-[#E8DCC4] flex items-center gap-2">
                     <span className="material-symbols-outlined text-yellow-500">album</span> Chọn Băng Mới
                   </h3>
@@ -314,9 +322,9 @@ export function Cassette() {
               </div>
             </div>
           )}
-          {/* ========================================================= */}
 
-        </div>
+        </div>,
+        document.body
       )}
 
       <UploadModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onSubmitRequest={handleRequestSubmit} onUploadSuccess={fetchPlaylist} />

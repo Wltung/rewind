@@ -128,7 +128,7 @@ export default function Home() {
       <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[9999]">
         <button 
           onClick={handleReturnToDesk} // ---> Gắn hàm vào đây
-          className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7]/90 backdrop-blur-sm px-3 md:px-4 py-2 shadow-[2px_2px_0px_rgba(0,0,0,0.15)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-[#d4c5a3]"
+          className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7]/90 backdrop-blur-sm px-2 py-1 text-sm shadow-[2px_2px_0px_rgba(0,0,0,0.15)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-[#d4c5a3]"
         >
           <span className="material-symbols-outlined text-lg md:text-xl text-[#4a3a22]">arrow_back</span>
           <span className="font-display font-bold text-xs md:text-sm tracking-wide text-[#4a3a22]">BACK TO DESK</span>
