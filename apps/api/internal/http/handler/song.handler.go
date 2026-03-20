@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,6 +15,8 @@ import (
 	"rewind/api/internal/model"
 	"rewind/api/internal/service"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,6 +52,7 @@ func (h *SongHandler) GetPlaylist(c *gin.Context) {
 }
 
 // API Xử lý Upload Nhạc và Lời
+// API Xử lý Upload Nhạc và Lời
 func (h *SongHandler) UploadSong(c *gin.Context) {
 	// 1. Lấy Text Data từ FormData
 	title := c.PostForm("title")
@@ -66,31 +67,47 @@ func (h *SongHandler) UploadSong(c *gin.Context) {
 	}
 
 	// 2. Lấy File MP3
-	file, err := c.FormFile("audio_file")
+	fileHeader, err := c.FormFile("audio_file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Thiếu file âm thanh"})
 		return
 	}
 
-	// 3. Xử lý lưu File vào ổ cứng (Thư mục uploads/music)
-	// Tạo thư mục nếu chưa có
-	uploadDir := "./uploads/music"
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể tạo thư mục lưu file"})
+	// =========================================================
+	// 3. XỬ LÝ UPLOAD LÊN CLOUDINARY THAY VÌ Ổ CỨNG
+	// =========================================================
+
+	// Mở file ra để đọc data (Stream)
+	file, err := fileHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể mở file âm thanh"})
+		return
+	}
+	defer file.Close()
+
+	// Khởi tạo Cloudinary client từ biến môi trường CLOUDINARY_URL
+	cld, err := cloudinary.New()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi cấu hình Cloudinary: " + err.Error()})
 		return
 	}
 
-	// Đổi tên file để tránh trùng lặp (thêm timestamp)
-	filename := fmt.Sprintf("%d_%s", time.Now().Unix(), filepath.Base(file.Filename))
-	dst := filepath.Join(uploadDir, filename)
+	// Đẩy file lên Cloudinary
+	// Lưu ý: File MP3/Audio trên Cloudinary bắt buộc ResourceType phải là "video" hoặc "auto"
+	uploadResult, err := cld.Upload.Upload(c.Request.Context(), file, uploader.UploadParams{
+		Folder:       "rewind_project/music", // Tên thư mục trên mây, bạn có thể đổi tùy ý
+		ResourceType: "auto",                 // Tự động nhận diện file âm thanh
+	})
 
-	if err := c.SaveUploadedFile(file, dst); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi lưu file"})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi khi upload lên Cloudinary: " + err.Error()})
 		return
 	}
 
-	// URL để FE gọi vào nghe nhạc
-	audioURL := "/music/" + filename
+	// URL lấy từ Cloudinary trả về (đã bảo mật https)
+	audioURL := uploadResult.SecureURL
+
+	// =========================================================
 
 	// 4. Parse chuỗi JSON Lyrics thành Struct
 	var lyrics []model.LyricLine
@@ -109,7 +126,7 @@ func (h *SongHandler) UploadSong(c *gin.Context) {
 		Artist:        artist,
 		Quote:         quote,
 		DurationLabel: duration,
-		AudioURL:      audioURL,
+		AudioURL:      audioURL, // Lưu cái link Cloudinary dài thòong vào DB
 		Lyrics:        lyrics,
 	}
 
