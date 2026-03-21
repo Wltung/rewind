@@ -187,11 +187,11 @@ export default function AlbumPage() {
                         alt="Memory" 
                         loading="lazy" 
                         decoding="async" 
-                        className="w-auto h-auto max-w-[80vw] md:max-w-[400px] max-h-[50vh] md:max-h-[60vh] object-contain block transform-gpu" 
+                        className="w-full h-auto max-h-[45dvh] md:max-h-[55vh] object-contain block transform-gpu" 
                       />
                       </div>
                       
-                      <div className="font-hand text-xl md:text-2xl text-ink text-center leading-tight px-2 break-words break-all max-w-[80vw] md:max-w-[400px]">{mem.caption}</div>
+                      <div className="font-hand text-xl md:text-xl text-ink text-center leading-tight px-2 break-words break-all max-w-[80vw] md:max-w-[400px]">{mem.caption}</div>
                       <div className="font-stamp text-[10px] md:text-xs text-gray-400 absolute bottom-2 right-3 md:bottom-3 md:right-4">{formatDate(mem.memory_date)}</div>
                     </div>
                   </div>
@@ -200,9 +200,9 @@ export default function AlbumPage() {
                 const noteColor = NOTE_COLORS[index % NOTE_COLORS.length];
                 return (
                   <div key={mem.id} className="memory-item snap-center shrink-0 relative pt-12 opacity-0 will-change-transform transform-gpu">
-                    <div className={`${noteColor} shadow-[2px_2px_0px_rgba(0,0,0,0.1)] w-[240px] md:w-[280px] min-h-[240px] p-6 flex flex-col justify-center items-center transform ${rotateClass} hover:rotate-0 transition-transform duration-300 relative`}>
+                    <div className={`${noteColor} shadow-[2px_2px_0px_rgba(0,0,0,0.1)] w-[60vw] sm:w-[200px] md:w-[240px] max-w-[240px] min-h-[120px] sm:min-h-[150px] md:min-h-[200px] p-2 sm:p-3 md:p-5 flex flex-col justify-center items-center transform ${rotateClass} hover:rotate-0 transition-transform duration-300 relative`}>
                       <div className="absolute -top-3 right-8 w-16 h-6 washi-tape washi-tape-patterned rotate-45 opacity-80" />
-                      <p className="font-hand text-2xl md:text-3xl text-ink text-center leading-relaxed whitespace-pre-line break-words break-all max-w-full">"{mem.caption}"</p>
+                      <p className="font-hand text-xl md:text-xl text-ink text-center leading-relaxed whitespace-pre-line break-words break-all max-w-full">"{mem.caption}"</p>
                       <div className="mt-6 w-full text-right font-stamp text-[10px] md:text-xs text-gray-500 opacity-70">{formatDate(mem.memory_date)}</div>
                     </div>
                   </div>
