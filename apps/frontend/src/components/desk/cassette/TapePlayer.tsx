@@ -168,7 +168,7 @@ export function TapePlayer({
           onClick={onOpenUpload}
           className="absolute top-0 -left-2 md:-left-8 w-36 md:w-40 h-20 md:h-24 bg-[#FCEA7A] rounded-md border-[3px] border-[#1a1a1a] shadow-[4px_4px_0_rgba(0,0,0,0.8)] transform -rotate-3 flex flex-col items-center justify-center cursor-pointer hover:-translate-y-2 hover:rotate-0 hover:shadow-[6px_6px_0_rgba(0,0,0,0.8)] transition-all z-20"
         >
-          <span className="font-hand font-bold text-ink text-lg md:text-xl leading-none text-center mb-1">ORDER<br/>YOUR SONG</span>
+          <span className="font-hand font-bold text-ink text-lg md:text-xl leading-none text-center mb-1">MUỐN<br/>BÀI KHÁC</span>
           <div className="w-6 h-6 bg-[#1877F2] rounded-full flex items-center justify-center text-white border-2 border-[#1a1a1a]">
             <span className="material-symbols-outlined text-[16px] font-bold">add</span>
           </div>
