@@ -31,7 +31,7 @@ export function LyricsSheet({ currentTrack, currentTime, audioRef, isPlaying, on
   }, [activeLyricIndex]);
 
   return (
-    <div className="flex-1 w-full max-w-[500px] mx-auto lg:h-[560px] relative mt-8 lg:mt-0 flex flex-col">
+    <div className="flex-1 w-full max-w-[500px] max-h-[400px] lg:max-h-none mx-auto lg:h-[560px] relative mt-8 lg:mt-0 flex flex-col">
       <style>{`
         .lined-paper {
           background-color: #FDFBF7;
