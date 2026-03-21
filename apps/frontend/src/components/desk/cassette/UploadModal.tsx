@@ -170,7 +170,7 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[999999] w-screen h-screen flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[999999] w-screen min-h-screen flex items-center justify-center overflow-hidden">
       
       {/* LỚP NỀN ĐEN CHE MỜ */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
