@@ -130,7 +130,7 @@ export default function AlbumPage() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between items-start pointer-events-none transform-gpu">
         <button 
-          onClick={handleBackToDesk} // ---> Gắn sự kiện quay về
+          onClick={handleBackToDesk}
           className="pointer-events-auto group flex items-center gap-2 bg-[#FDFBF7] px-3 md:px-4 py-2 shadow-[2px_2px_0px_rgba(0,0,0,0.1)] transform -rotate-1 hover:rotate-0 hover:scale-105 transition-[transform,shadow] duration-300 border border-gray-200 will-change-transform"
         >
           <span className="material-symbols-outlined text-lg md:text-xl text-ink">arrow_back</span>
@@ -160,7 +160,8 @@ export default function AlbumPage() {
 
       {/* Vùng Cuộn Chứa Ảnh */}
       <div className="flex-1 flex items-center relative w-full h-screen z-10">
-        <div ref={scrollContainerRef} className="w-full h-full overflow-x-auto overflow-y-hidden no-scrollbar flex items-center px-[5vw] md:px-[10vw] gap-12 md:gap-32 snap-x snap-mandatory py-10 will-change-scroll transform-gpu">
+        {/* SỬA: Giảm px-[5vw] xuống px-[4vw], gap-12 xuống gap-8 trên mobile để các item gần nhau hơn */}
+        <div ref={scrollContainerRef} className="w-full h-full overflow-x-auto overflow-y-hidden no-scrollbar flex items-center px-[4vw] md:px-[10vw] gap-8 md:gap-32 snap-x snap-mandatory py-10 will-change-scroll transform-gpu">
           
           {isLoading ? (
             <div className="flex flex-col items-center justify-center w-full gap-4 text-ink/50 opacity-80">
@@ -168,7 +169,7 @@ export default function AlbumPage() {
                <div className="font-mono tracking-widest animate-pulse">Đang tìm lại ký ức...</div>
             </div>
           ) : memories.length === 0 ? (
-            <div className="flex w-full justify-center text-ink/50 font-hand text-2xl">Album này vẫn còn trống... Hãy chụp thêm vài bức ảnh nhé!</div>
+            <div className="flex w-full justify-center text-ink/50 font-hand text-2xl px-4 text-center">Album này vẫn còn trống... Hãy chụp thêm vài bức ảnh nhé!</div>
           ) : (
             memories.map((mem, index) => {
               const rotateClass = ROTATIONS[index % ROTATIONS.length];
@@ -176,34 +177,38 @@ export default function AlbumPage() {
               if (mem.image_url) {
                 const tapeColor = TAPES[index % TAPES.length];
                 return (
-                  // Gắn class memory-item và opacity-0 cho GSAP điều khiển
                   <div key={mem.id} className="memory-item snap-center shrink-0 relative group flex justify-center items-center opacity-0 will-change-transform transform-gpu">
-                    <div className={`relative bg-white p-3 md:p-4 pb-12 md:pb-16 shadow-[5px_5px_15px_rgba(0,0,0,0.15)] transform ${rotateClass} group-hover:rotate-0 group-hover:scale-[1.02] transition-[transform,scale] duration-500 ease-out border border-gray-100 inline-block`}>
-                      <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-20 md:w-24 h-6 md:h-8 washi-tape ${tapeColor} -rotate-2 z-10`} />
+                    {/* ÉP KÍCH THƯỚC: w-[240px] cho mobile, đổi sang flex-col để cân đối chữ */}
+                    <div className={`relative bg-white p-2 md:p-4 pb-8 md:pb-16 shadow-[5px_5px_15px_rgba(0,0,0,0.15)] transform ${rotateClass} group-hover:rotate-0 transition-transform duration-500 ease-out border border-gray-100 flex flex-col items-center w-[240px] md:w-auto md:max-w-none`}>
+                      <div className={`absolute -top-3 left-1/2 -translate-x-1/2 w-16 md:w-24 h-5 md:h-8 washi-tape ${tapeColor} -rotate-2 z-10`} />
                       
-                      <div className="bg-gray-100 overflow-hidden mb-3 md:mb-4 grayscale-[0.2] group-hover:grayscale-0 transition-[filter] duration-700 flex justify-center items-center transform-gpu">
-                      <img 
-                        src={mem.image_url}
-                        alt="Memory" 
-                        loading="lazy" 
-                        decoding="async" 
-                        className="w-full h-auto max-h-[45dvh] md:max-h-[55vh] object-contain block transform-gpu" 
-                      />
+                      <div className="w-full bg-gray-100 overflow-hidden mb-2 md:mb-4 grayscale-[0.2] group-hover:grayscale-0 transition-[filter] duration-700 flex justify-center items-center transform-gpu">
+                        <img 
+                          src={mem.image_url}
+                          alt="Memory" 
+                          loading="lazy" 
+                          decoding="async" 
+                          /* ÉP ẢNH NGẮN LẠI: max 140px trên mobile để không bao giờ bị lẹm */
+                          className="w-full h-auto max-h-[140px] md:max-h-[55vh] object-contain block transform-gpu" 
+                        />
                       </div>
                       
-                      <div className="font-hand text-xl md:text-xl text-ink text-center leading-tight px-2 break-words break-all max-w-[80vw] md:max-w-[400px]">{mem.caption}</div>
-                      <div className="font-stamp text-[10px] md:text-xs text-gray-400 absolute bottom-2 right-3 md:bottom-3 md:right-4">{formatDate(mem.memory_date)}</div>
+                      {/* Ép chữ nhỏ lại: text-sm cho mobile */}
+                      <div className="font-hand text-sm md:text-xl text-ink text-center leading-tight px-1 md:px-2 break-words break-all w-full md:max-w-[400px]">{mem.caption}</div>
+                      <div className="font-stamp text-[9px] md:text-xs text-gray-400 absolute bottom-1 right-2 md:bottom-3 md:right-4">{formatDate(mem.memory_date)}</div>
                     </div>
                   </div>
                 );
               } else {
                 const noteColor = NOTE_COLORS[index % NOTE_COLORS.length];
                 return (
-                  <div key={mem.id} className="memory-item snap-center shrink-0 relative pt-12 opacity-0 will-change-transform transform-gpu">
-                    <div className={`${noteColor} shadow-[2px_2px_0px_rgba(0,0,0,0.1)] w-[60vw] sm:w-[200px] md:w-[240px] max-w-[240px] min-h-[120px] sm:min-h-[150px] md:min-h-[200px] p-2 sm:p-3 md:p-5 flex flex-col justify-center items-center transform ${rotateClass} hover:rotate-0 transition-transform duration-300 relative`}>
-                      <div className="absolute -top-3 right-8 w-16 h-6 washi-tape washi-tape-patterned rotate-45 opacity-80" />
-                      <p className="font-hand text-xl md:text-xl text-ink text-center leading-relaxed whitespace-pre-line break-words break-all max-w-full">"{mem.caption}"</p>
-                      <div className="mt-6 w-full text-right font-stamp text-[10px] md:text-xs text-gray-500 opacity-70">{formatDate(mem.memory_date)}</div>
+                  <div key={mem.id} className="memory-item snap-center shrink-0 relative pt-4 md:pt-12 opacity-0 will-change-transform transform-gpu">
+                    {/* ÉP KÍCH THƯỚC: Note gom lại thành 180px cho mobile */}
+                    <div className={`${noteColor} shadow-[2px_2px_0px_rgba(0,0,0,0.1)] w-[180px] md:w-[240px] min-h-[100px] md:min-h-[200px] p-3 md:p-5 flex flex-col justify-center items-center transform ${rotateClass} hover:rotate-0 transition-transform duration-300 relative`}>
+                      <div className="absolute -top-2 right-4 md:right-8 w-12 md:w-16 h-5 md:h-6 washi-tape washi-tape-patterned rotate-45 opacity-80" />
+                      {/* Ép chữ nhỏ lại: text-sm cho mobile */}
+                      <p className="font-hand text-sm md:text-xl text-ink text-center leading-relaxed whitespace-pre-line break-words break-all w-full">"{mem.caption}"</p>
+                      <div className="mt-3 md:mt-6 w-full text-right font-stamp text-[9px] md:text-xs text-gray-500 opacity-70">{formatDate(mem.memory_date)}</div>
                     </div>
                   </div>
                 );
