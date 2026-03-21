@@ -170,10 +170,10 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[999999] w-screen min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[999999] w-full h-[100dvh] overflow-y-auto overflow-x-hidden flex flex-col items-center p-4 md:p-8">
       
       {/* LỚP NỀN ĐEN CHE MỜ */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
       <style>{`
         @keyframes pop-bounce { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
