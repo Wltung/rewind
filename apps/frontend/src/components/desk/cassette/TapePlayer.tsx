@@ -44,7 +44,7 @@ export function TapePlayer({
           
           <div className="absolute top-2 left-4 right-4 flex justify-between items-start">
             <div className="flex flex-col items-start -rotate-1 transform origin-left truncate pr-2 max-w-[70%]">
-              <span className="font-hand text-2xl lg:text-3xl font-bold text-ink leading-none truncate w-full">
+              <span className="font-hand text-2xl lg:text-3xl font-bold text-ink leading-none truncate w-full pt-2">
                 {currentTrack.title}
               </span>
               {currentTrack.artist && (
@@ -67,38 +67,50 @@ export function TapePlayer({
         <div className="flex-1 bg-[#222] relative flex items-center justify-center px-8 py-2">
           <div className="w-full h-full bg-[#444] rounded-md border border-[#555] relative overflow-hidden flex items-center justify-center gap-4 lg:gap-12 px-4 shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.25)]">
             {/* ---> CHÍNH THỨC HÓA: DẢI BĂNG (TAPE BELT) NỐI 2 BÁNH XE <--- */}
-            {/* Độc lập hoàn toàn, nằm dưới cùng (z-0) để không bao giờ bị mất */}
-            <div className="absolute inset-[4px] md:inset-[8px] rounded-full border-[8px] md:border-[10px] border-[#5a4a42] pointer-events-none z-0 opacity-90 shadow-inner" />
+            {/* Bỏ inset-4 cũ, dùng absolute căn giữa và gán w, h cụ thể để ôm sát 2 bánh xe mới */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[50px] border-[8px] md:border-[10px] border-[#5a4a42] pointer-events-none z-0 opacity-90 shadow-inner w-[calc(100%-8px)] lg:w-[calc(100%-16px)] h-[110px] lg:h-[120px]" />
 
-            {/* BÁNH XE TRÁI (Thêm relative z-10 để giữ lõi băng của riêng nó) */}
-            <div className={`relative z-10 w-24 h-24 rounded-full border-4 border-white/80 bg-transparent flex items-center justify-center shadow-lg ${isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}>
-              <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center relative">
-                <div className="w-3 h-3 bg-black rounded-full absolute top-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute bottom-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute left-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute right-2" />
-                <div className="w-6 h-6 bg-black/20 rounded-full absolute" />
+            {/* ---> KHUNG CHỨA BÁNH XE: Tăng gap-4 cũ lên gap-20 để đẩy 2 bánh xe ra <--- */}
+            {/* Chỗ này sửa gap-4 thành gap-20 cho mobile, giữ nguyên lg:gap-12 */}
+            <div className="relative z-10 w-full h-full flex items-center justify-center gap-14 lg:gap-12 px-4 md:px-8">
+              
+              {/* BÁNH XE TRÁI: Thêm relative, BỎ shadow-lg */}
+              <div className="relative w-24 h-24 shrink-0 rounded-full border-4 border-white/80 bg-transparent flex items-center justify-center">
+                
+                {/* LÕI TRẮNG: Chuyển animate-spin vào đây để chỉ lõi xoay */}
+                <div className={`w-20 h-20 rounded-full bg-white flex items-center justify-center relative ${isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}>
+                  <div className="w-3 h-3 bg-black rounded-full absolute top-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute bottom-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute left-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute right-2" />
+                  <div className="w-6 h-6 bg-black/20 rounded-full absolute" />
+                </div>
+                
+                {/* Lõi băng bên trái (nhỏ dần) */}
+                <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000 pointer-events-none" style={{ borderWidth: `${Math.max(2, 10 - (progress / 10))}px` }} />
               </div>
-              {/* Lõi băng bên trái (nhỏ dần) */}
-              <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000" style={{ borderWidth: `${10 - (progress / 10)}px` }} />
-            </div>
 
-            {/* TRỤC GIỮA */}
-            <div className="relative z-10 flex flex-col gap-1 items-center opacity-40">
-              <div className="w-12 h-8 border border-white/30 rounded-sm bg-black/20" />
-            </div>
-
-            {/* BÁNH XE PHẢI (Thêm relative z-10) */}
-            <div className={`relative z-10 w-24 h-24 rounded-full border-4 border-white/80 bg-transparent flex items-center justify-center shadow-lg ${isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}>
-              <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center relative">
-                <div className="w-3 h-3 bg-black rounded-full absolute top-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute bottom-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute left-2" />
-                <div className="w-3 h-3 bg-black rounded-full absolute right-2" />
-                <div className="w-6 h-6 bg-black/20 rounded-full absolute" />
+              {/* TRỤC GIỮA */}
+              <div className="flex flex-col gap-1 items-center justify-center opacity-40 shrink-0">
+                <div className="w-10 h-6 lg:w-12 lg:h-8 border border-white/30 rounded-sm bg-black/20" />
               </div>
-              {/* Lõi băng bên phải (to dần) */}
-              <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000" style={{ borderWidth: `${10 - (progress / 10)}px` }} />
+
+              {/* BÁNH XE PHẢI: Thêm relative, BỎ shadow-lg */}
+              <div className="relative w-24 h-24 shrink-0 rounded-full border-4 border-white/80 bg-transparent flex items-center justify-center">
+                
+                {/* LÕI TRẮNG: Chuyển animate-spin vào đây để chỉ lõi xoay */}
+                <div className={`w-20 h-20 rounded-full bg-white flex items-center justify-center relative ${isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}>
+                  <div className="w-3 h-3 bg-black rounded-full absolute top-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute bottom-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute left-2" />
+                  <div className="w-3 h-3 bg-black rounded-full absolute right-2" />
+                  <div className="w-6 h-6 bg-black/20 rounded-full absolute" />
+                </div>
+                
+                {/* Lõi băng bên phải (to dần) */}
+                <div className="absolute inset-0 rounded-full border-[#5a4a42] transition-all duration-1000 pointer-events-none" style={{ borderWidth: `${Math.max(2, (progress / 10))}px` }} />
+              </div>
+
             </div>
           </div>
         </div>
