@@ -192,17 +192,34 @@ export function Cassette() {
       <MiniCassette currentTrack={currentTrack} isPlaying={isPlaying} onOpen={() => setIsOpen(true)} />
 
       {deskNote && (
+        // LỚP NGOÀI CÙNG (WRAPPER): Ghim deaths và cho phép thò ra ngoài
         <div 
-          onClick={() => setIsUploadOpen(true)}
-          className="hover-lift absolute bottom-10 left-[300px] lg:bottom-12 lg:left-[360px] xl:bottom-20 xl:left-[420px] z-10 w-32 lg:w-36 h-32 lg:h-36 bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] transform rotate-3 flex flex-col items-center justify-center p-3 text-center cursor-pointer border border-yellow-200/50"
+          className="hover-lift absolute bottom-10 left-[300px] lg:bottom-12 lg:left-[360px] xl:bottom-20 xl:left-[420px] z-10 w-32 lg:w-36 h-32 lg:h-36 transform rotate-3 cursor-pointer will-change-transform"
           style={{ '--hover-rotate': '6deg' } as React.CSSProperties}
+          onClick={() => setIsUploadOpen(true)}
         >
-          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-700 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.4)] border border-red-900/50 flex items-center justify-center">
-            <div className="w-1 h-1 bg-white/60 rounded-full translate-x-[-1px] translate-y-[-1px]"></div>
+          {/* Cây ghim đỏ (Cố định ở đỉnh wrapper, không bị cut) */}
+          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-red-700 rounded-full shadow-[0_2px_4px_rgba(0,0,0,0.4)] border border-red-900/50 flex items-center justify-center z-20">
+            <div className="w-1.5 h-1.5 bg-white/60 rounded-full translate-x-[-1px] translate-y-[-1px]"></div>
           </div>
-          <p className="font-hand text-ink text-sm lg:text-base leading-tight opacity-80 mb-1">Song Request</p>
-          <p className="font-hand text-ink font-bold text-base lg:text-lg leading-tight truncate w-full px-2">"{deskNote.title}"</p>
-          {deskNote.artist && <p className="font-hand text-ink text-sm lg:text-base leading-tight truncate w-full mt-1">- {deskNote.artist} -</p>}
+
+          {/* LỚP TỜ GIẤY NHỚ (NOTE CONTENT): Ngăn chữ tràn ra ngoài */}
+          <div className="relative w-full h-full bg-[#FCEA7A] shadow-[2px_4px_6px_rgba(0,0,0,0.15)] rounded-sm border border-yellow-200/50 p-2 text-center flex flex-col items-center justify-start pt-6 overflow-hidden z-10">
+            
+            <p className="font-hand text-ink text-sm lg:text-base leading-tight opacity-80 mb-0.5 shrink-0">Song Request</p>
+            
+            {/* Giới hạn Title tối đa 3 dòng */}
+            <p className="font-hand text-ink font-bold text-lg lg:text-xl leading-tight w-full px-1 break-words break-all line-clamp-3 shrink-0">
+              "{deskNote.title}"
+            </p>
+            
+            {/* Giới hạn Artist tối đa 1 dòng */}
+            {deskNote.artist && (
+              <p className="font-hand text-ink text-sm lg:text-base leading-tight w-full mt-0.5 break-all line-clamp-1 shrink-0">
+                - {deskNote.artist} -
+              </p>
+            )}
+          </div>
         </div>
       )}
 

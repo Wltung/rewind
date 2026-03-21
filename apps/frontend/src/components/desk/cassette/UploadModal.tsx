@@ -172,7 +172,7 @@ export function UploadModal({ isOpen, onClose, onSubmitRequest, onUploadSuccess 
   return createPortal(
     <>
       {/* 1. LỚP NỀN ĐEN: Tách riêng ra, ghim cứng 100% màn hình, không bị cuộn */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999]" onClick={onClose} />
+      <div className="fixed inset-0 w-screen h-screen bg-black/60 backdrop-blur-sm z-[99999]" onClick={onClose} />
 
       {/* 2. KHUNG CUỘN CHÍNH: Dùng h-[100dvh] để trị lỗi Safari, và flex để căn giữa */}
       <div className="fixed inset-0 w-full h-[100dvh] overflow-y-auto overflow-x-hidden z-[99999] pointer-events-none flex flex-col items-center justify-start md:justify-center p-4">
