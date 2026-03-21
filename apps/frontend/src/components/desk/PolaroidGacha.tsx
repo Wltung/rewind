@@ -341,7 +341,7 @@ export function PolaroidGacha() {
                           src={currentMemory.image_url} 
                           alt="Memory" 
                           onError={() => setImageError(true)}
-                          className="w-auto h-auto max-w-[85vw] md:max-w-[400px] max-h-[90vh] object-contain block grayscale-[0.1] animate-in fade-in zoom-in-95 duration-1000" 
+                          className="w-auto h-auto max-w-[85vw] md:max-w-[400px] max-h-[90vh] md:max-h-[400px] object-contain block grayscale-[0.1] animate-in fade-in zoom-in-95 duration-1000" 
                         />
                       </div>
                     )}
@@ -350,7 +350,7 @@ export function PolaroidGacha() {
                       {isLoading || !currentMemory ? (
                         <div className="w-1/2 h-3 bg-gray-200 rounded animate-pulse" />
                       ) : (
-                        <p className="text-center font-hand text-2xl md:text-3xl text-ink w-full px-2 break-all whitespace-pre-wrap">
+                        <p className="text-center font-hand text-2xl md:text-3xl text-ink w-full px-2 break-words whitespace-pre-wrap">
                           {currentMemory.caption}
                         </p>
                       )}
@@ -370,7 +370,7 @@ export function PolaroidGacha() {
                     <div className="absolute top-4 left-4 w-12 h-12 opacity-[0.03] bg-black rounded-full blur-[2px]" />
 
                     <div className="relative z-10 flex-1 flex flex-col items-center justify-center">
-                      <p className="font-hand text-2xl md:text-4xl text-ink leading-[1.4] text-center whitespace-pre-line break-words break-all rotate-[-2deg]">
+                      <p className="font-hand text-2xl md:text-4xl text-ink leading-[1.4] text-center whitespace-pre-line break-words rotate-[-2deg]">
                         {currentMemory?.secret_message}
                       </p>
                     </div>
