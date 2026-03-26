@@ -45,7 +45,7 @@ func Login(c *gin.Context) {
 	// Nhét Token vào HTTP-Only Cookie
 	// Cấu hình lại: domain rỗng (""), secure = true, sameSite = None (bắt buộc cho Cross-Origin)
 	c.SetSameSite(http.SameSiteNoneMode)
-	c.SetCookie("rewind_auth", tokenString, 3600*24*7, "/", "", true, true)
+	c.SetCookie("rewind_auth", tokenString, 315360000, "/", "", true, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Mở khóa thành công!"})
 }
