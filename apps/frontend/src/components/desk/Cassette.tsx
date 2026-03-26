@@ -209,13 +209,13 @@ export function Cassette() {
             <p className="font-hand text-ink text-sm lg:text-base leading-tight opacity-80 mb-0.5 shrink-0">Song Request</p>
             
             {/* Giới hạn Title tối đa 3 dòng */}
-            <p className="font-hand text-ink font-bold text-lg lg:text-xl leading-tight w-full px-1 break-words break-all line-clamp-3 shrink-0">
+            <p className="font-hand text-ink font-bold text-lg lg:text-xl leading-tight w-full px-1 break-words line-clamp-3 shrink-0">
               "{deskNote.title}"
             </p>
             
             {/* Giới hạn Artist tối đa 1 dòng */}
             {deskNote.artist && (
-              <p className="font-hand text-ink text-sm lg:text-base leading-tight w-full mt-0.5 break-all line-clamp-1 shrink-0">
+              <p className="font-hand text-ink text-sm lg:text-base leading-tight w-full mt-0.5 break-words line-clamp-2 shrink-0">
                 - {deskNote.artist} -
               </p>
             )}
