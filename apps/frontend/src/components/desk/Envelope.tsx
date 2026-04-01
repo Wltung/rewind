@@ -43,7 +43,7 @@ export function Envelope() {
       
       {/* Thêm hiệu ứng nhịp đập (group-hover:scale-110) cho icon trái tim thêm sinh động */}
       <div className="absolute top-[60px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-red-800 rounded-full shadow-md flex items-center justify-center text-white border-2 border-red-900/50 transition-transform group-hover:scale-110">
-        <span className="material-symbols-outlined text-sm">favorite</span>
+        <span className="material-symbols-outlined text-sm">family_star</span>
       </div>
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-full text-center">
         <p className="font-hand text-xl text-ink">8/3 🌷</p>

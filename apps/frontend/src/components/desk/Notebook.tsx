@@ -54,9 +54,9 @@ export function Notebook() {
           <span className="font-typewriter text-sm text-gray-500">{weatherText}</span>
         </div>
         <div className="space-y-4 text-2xl md:text-3xl leading-relaxed pl-8" style={{ backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #e5e7eb 32px)", lineHeight: "32px", paddingBottom: "4px" }}>
-          <p className="text-primary font-bold">Hello cô gái!</p>
-          <p>Cố gắng cả tuần rồi.</p>
-          <p>Ngủ chút chứ?</p>
+          <p className="text-primary font-bold">Hello em gái!</p>
+          <p>Gắng lên nào.</p>
+          <p>Sắp thi rồi đấy!!!</p>
           <p className="text-xl text-gray-500 mt-4">- Đeo tai nghe nha! 🎧</p>
         </div>
         <div className="absolute bottom-4 right-8 transform rotate-12 opacity-80">

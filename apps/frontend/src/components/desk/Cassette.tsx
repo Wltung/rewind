@@ -32,11 +32,12 @@ export function Cassette() {
 
   const [deskNote, setDeskNote] = useState<DeskNote | null>(null);
 
+  const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
   // ---> 1. VIẾT HÀM LẤY TỜ NOTE RA RIÊNG ĐỂ DÙNG NHIỀU LẦN <---
   const fetchDeskNote = async () => {
     const note = await configService.getDeskNote();
     if (note) {
-      const isExpired = Date.now() - note.timestamp > 86400000;
+      const isExpired = Date.now() - note.timestamp > THREE_DAYS;
       if (isExpired) {
         await configService.setDeskNote(null);
         setDeskNote(null); // Quá hạn thì set null để ẩn
