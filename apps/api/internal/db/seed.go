@@ -2,35 +2,67 @@ package db
 
 import (
 	"log"
+	"rewind/api/internal/config"
 	"rewind/api/internal/model"
 
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func Seed() {
-	var count int64
-	DB.Model(&model.SiteConfig{}).Where("`key` = ?", "master_password").Count(&count)
+	var siteConfig model.SiteConfig
 
-	// Nếu chưa có master_password trong DB thì tiến hành tạo
-	if count == 0 {
-		log.Println("Đang khởi tạo Master Password mặc định...")
+	// 1. Lấy mật khẩu hiện tại từ biến môi trường (.env)
+	currentEnvPassword := config.Cfg.DefaultPassword
 
-		// Băm mật khẩu "3001"
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("3001"), bcrypt.DefaultCost)
-		if err != nil {
-			log.Fatalf("❌ Lỗi băm mật khẩu: %v", err)
+	// 2. Tìm cấu hình master_password trong DB
+	err := DB.Where("`key` = ?", "master_password").First(&siteConfig).Error
+
+	if err == gorm.ErrRecordNotFound {
+		// TRƯỜNG HỢP A: Chưa từng có mật khẩu trong DB -> TẠO MỚI
+		log.Println("Đang khởi tạo Master Password từ .env...")
+
+		hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(currentEnvPassword), bcrypt.DefaultCost)
+		if hashErr != nil {
+			log.Fatalf("❌ Lỗi băm mật khẩu: %v", hashErr)
 		}
 
-		// Lưu vào DB
-		config := model.SiteConfig{
+		newConfig := model.SiteConfig{
 			Key:   "master_password",
 			Value: string(hashedPassword),
 		}
-
-		if err := DB.Create(&config).Error; err != nil {
+		if err := DB.Create(&newConfig).Error; err != nil {
 			log.Fatalf("❌ Lỗi lưu Seed data: %v", err)
 		}
-		log.Println("✅ Seed Master Password thành công!")
+		log.Println("✅ Tạo mới Master Password thành công!")
+
+	} else if err == nil {
+		// TRƯỜNG HỢP B: Đã có mật khẩu trong DB
+		// Kiểm tra xem mật khẩu trong .env có khớp với DB không
+		errMatch := bcrypt.CompareHashAndPassword([]byte(siteConfig.Value), []byte(currentEnvPassword))
+
+		// Nếu KHÔNG KHỚP (errMatch != nil) hoặc value trong DB bị rỗng
+		if errMatch != nil || siteConfig.Value == "" {
+			log.Println("⚠️ Phát hiện mật khẩu trong .env đã thay đổi. Đang cập nhật lại DB...")
+
+			hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(currentEnvPassword), bcrypt.DefaultCost)
+			if hashErr != nil {
+				log.Fatalf("❌ Lỗi băm mật khẩu mới: %v", hashErr)
+			}
+
+			siteConfig.Value = string(hashedPassword)
+			if err := DB.Save(&siteConfig).Error; err != nil {
+				log.Fatalf("❌ Lỗi cập nhật Master Password: %v", err)
+			}
+			log.Println("✅ Cập nhật Master Password mới thành công!")
+		} else {
+			// Nếu khớp -> Không làm gì cả
+			log.Println("⚡ Master Password giữ nguyên, không cần cập nhật.")
+		}
+
+	} else {
+		// Lỗi truy vấn DB khác (mất kết nối, sai tên bảng...)
+		log.Fatalf("❌ Lỗi truy vấn Database: %v", err)
 	}
 
 	// ==========================================
@@ -44,8 +76,8 @@ func Seed() {
 
 		songs := []model.Song{
 			{
-				Title:         "In Love - Mix",
-				AudioURL:      "/music/In_Love.mp3",
+				Title:         "Test - Mix",
+				AudioURL:      "/music/Test.mp3",
 				DurationLabel: "90 MIN",
 				OrderIndex:    1,
 				Lyrics: []model.LyricLine{
