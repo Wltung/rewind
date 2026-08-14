@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import NOTEBOOK_ICONS from "@/assets/material_symbol_icons.json";
 
 export function Notebook() {
   const today = new Date();
@@ -6,23 +7,33 @@ export function Notebook() {
 
   const [weatherText, setWeatherText] = useState("Đang nhìn ra cửa sổ... ☁️");
 
-  useEffect(() => {
-    const fetchWeatherAndLocation = async () => {
-      try {
-        // Tọa độ cứng bạn đã cung cấp
-        const LAT = 20.269356716491323;
-        const LON = 106.47622764740456;
+  // State cho Nội dung
+  const [title, setTitle] = useState("Hello");
+  const [bodyText, setBodyText] = useState("try\nagain!");
+  const [footerText, setFooterText] = useState("- Let's song 🎧");
+  
+  // State cho Icon Material Symbols
+  const [iconName, setIconName] = useState(NOTEBOOK_ICONS[0].id);
 
-        // 1. Gọi API Dịch ngược tọa độ (Lấy tên Xã/Huyện/Tỉnh)
-        // Dùng BigDataCloud free tier, trả về tiếng Việt
-        const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${LAT}&longitude=${LON}&localityLanguage=vi`);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [bodyText]);
+
+  useEffect(() => {
+    // 1. Tách hàm fetch thành một hàm nhận tham số lat và lon
+    const fetchWeatherAndLocation = async (lat: number, lon: number) => {
+      try {
+        const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=vi`);
         const geoData = await geoRes.json();
 
-        // 2. Gọi API Thời tiết chính xác tại tọa độ đó
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`);
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         const weatherData = await weatherRes.json();
         
-        // 3. Vietsub mã thời tiết
         const code = weatherData.current_weather.weathercode;
         let weatherIcon = "☁️";
         let condition = "Cloudy";
@@ -34,15 +45,38 @@ export function Notebook() {
         else if (code >= 80 && code <= 82) { weatherIcon = "☔"; condition = "Heavy Rain"; }
         else if (code >= 95 && code <= 99) { weatherIcon = "⛈️"; condition = "Thunderstorm"; }
 
-        // Kết quả: "Trời có mây ⛅ (Giao Hoà)"
-        setWeatherText(`Weather: ${condition} ${weatherIcon}`);
-
+        setWeatherText(`${geoData.locality} - ${condition} ${weatherIcon}`);
       } catch (error) {
         setWeatherText("Thời tiết đẹp 🌤️"); 
       }
     };
 
-    fetchWeatherAndLocation();
+    // 2. Tọa độ mặc định (Fallback)
+    const defaultLat = 10.789167378446649;
+    const defaultLon = 106.73059096401705;
+
+    // 3. Lấy vị trí từ thiết bị
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Thành công: Dùng tọa độ thực tế
+          fetchWeatherAndLocation(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          // Lỗi (người dùng từ chối, timeout...): Dùng tọa độ mặc định
+          console.warn("Không lấy được vị trí, dùng tọa độ mặc định:", error.message);
+          fetchWeatherAndLocation(defaultLat, defaultLon);
+        },
+        {
+          enableHighAccuracy: true, // Ưu tiên GPS độ chính xác cao
+          timeout: 10000,           // Timeout 10s
+          maximumAge: 0             // Không dùng cache vị trí cũ
+        }
+      );
+    } else {
+      // Trình duyệt không hỗ trợ Geolocation
+      fetchWeatherAndLocation(defaultLat, defaultLon);
+    }
   }, []);
 
   return (
@@ -53,16 +87,60 @@ export function Notebook() {
           <span className="font-typewriter text-sm text-gray-500">Date: {currentDate}</span>
           <span className="font-typewriter text-sm text-gray-500">{weatherText}</span>
         </div>
-        <div className="space-y-4 text-2xl md:text-3xl leading-relaxed pl-8" style={{ backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #e5e7eb 32px)", lineHeight: "32px", paddingBottom: "4px" }}>
-          <p className="text-primary font-bold">Hello em gái!</p>
-          <p>Gắng lên nào.</p>
-          <p>Sắp thi rồi đấy!!!</p>
-          <p className="text-xl text-gray-500 mt-4">- Đeo tai nghe nha! 🎧</p>
+        
+        <div className="text-2xl md:text-3xl pl-8 flex flex-col" style={{ backgroundImage: "repeating-linear-gradient(transparent, transparent 31px, #e5e7eb 32px)", lineHeight: "32px", paddingBottom: "4px" }}>
+          
+          {/* Khúc 1: Title */}
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="text-primary font-bold bg-transparent outline-none w-full placeholder-primary/50 p-0 m-0 mb-[32px] border-none block"
+            style={{ lineHeight: "32px" }}
+            placeholder="Nhập tiêu đề..."
+          />
+
+          {/* Khúc 2: Main Text */}
+          <textarea
+            ref={textareaRef}
+            value={bodyText}
+            onChange={(e) => setBodyText(e.target.value)}
+            className="bg-transparent outline-none w-full resize-none overflow-hidden placeholder-gray-400 p-0 m-0 border-none block"
+            style={{ lineHeight: "32px", minHeight: "32px" }}
+            rows={bodyText.split('\n').length}
+            placeholder="Viết gì đó đi..."
+          />
+
+          {/* Khúc 3: Footer */}
+          <input
+            type="text"
+            value={footerText}
+            onChange={(e) => setFooterText(e.target.value)}
+            className="text-xl text-gray-500 bg-transparent outline-none w-full placeholder-gray-400 p-0 m-0 mt-[32px] border-none block"
+            style={{ lineHeight: "32px" }}
+            placeholder="Nhập chữ ký hoặc bài hát..."
+          />
+
         </div>
+
+        {/* Khu vực thay đổi Icon ma thuật */}
         <div className="absolute bottom-4 right-8 transform rotate-12 opacity-80">
-          <span className="material-symbols-outlined text-4xl text-primary">sentiment_satisfied</span>
+          <select
+            value={iconName}
+            onChange={(e) => setIconName(e.target.value)}
+            title="Nhấn để đổi Icon"
+            className="material-symbols-outlined text-4xl text-primary bg-transparent outline-none border-none appearance-none cursor-pointer pr-1"
+          >
+            {NOTEBOOK_ICONS.map((icon) => (
+              <option key={icon.id} value={icon.id} className="font-sans text-base text-gray-800">
+                {icon.id}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
+      
+      {/* Lỗ gáy sổ */}
       <div className="absolute left-[-10px] top-10 w-6 h-6 rounded-full border-4 border-gray-400 bg-[#FDFBF7]" />
       <div className="absolute left-[-10px] bottom-10 w-6 h-6 rounded-full border-4 border-gray-400 bg-[#FDFBF7]" />
       <div className="absolute left-[-10px] top-1/2 w-6 h-6 rounded-full border-4 border-gray-400 bg-[#FDFBF7] -translate-y-1/2" />

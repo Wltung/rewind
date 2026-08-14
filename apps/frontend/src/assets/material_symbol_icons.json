@@ -1,0 +1,16 @@
+[
+    { "id": "sentiment_satisfied", "label": "Vui vẻ" },
+    { "id": "sentiment_dissatisfied", "label": "Buồn bã" },
+    { "id": "favorite", "label": "Trái tim" },
+    { "id": "music_note", "label": "Âm nhạc" },
+    { "id": "local_cafe", "label": "Cà phê" },
+    { "id": "menu_book", "label": "Đọc sách" },
+    { "id": "eco", "label": "Cây lá" },
+    { "id": "star", "label": "Ngôi sao" },
+    { "id": "bolt", "label": "Năng lượng" },
+    { "id": "edit_document", "label": "Viết lách" },
+    { "id": "flight_takeoff", "label": "Du lịch" },
+    { "id": "bedtime", "label": "Ngủ ngon" },
+    { "id": "wb_sunny", "label": "Nắng đẹp" },
+    { "id": "rainy", "label": "Mưa rơi" }
+]

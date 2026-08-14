@@ -30,9 +30,9 @@ func LoadConfig() {
 		DBHost:         GetEnv("DB_HOST", "127.0.0.1"),
 		DBPort:         GetEnv("DB_PORT", "3306"),
 		DBUser:         GetEnv("DB_USER", "root"),
-		DBPassword:     GetEnv("DB_PASSWORD", ""),
+		DBPassword:     GetEnv("DB_PASSWORD", "abc@123"),
 		DBName:         GetEnv("DB_NAME", "rewind_db"),
 		JWTSecret:      GetEnv("JWT_SECRET", "default_secret"),
-		AllowedOrigins: GetEnv("CORS_ORIGINS", "http://localhost:3000"),
+		AllowedOrigins: GetEnv("CORS_ORIGINS", "http://localhost:3070"),
 	}
 }
