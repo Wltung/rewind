@@ -41,4 +41,27 @@ export const http = {
     }
     return res.json();
   },
+
+  // Thêm hàm này ngay dưới hàm post hiện tại
+  async put<T>(endpoint: string, body: any): Promise<T> {
+    const isFormData = body instanceof FormData;
+
+    const headers: HeadersInit = {};
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "PUT", // ĐỔI THÀNH PUT Ở ĐÂY
+      headers,
+      credentials: "include",
+      body: isFormData ? body : JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || "Có lỗi xảy ra khi cập nhật dữ liệu");
+    }
+    return res.json();
+  },
 };
